@@ -1,0 +1,48 @@
+<section class="card-list">
+  <header class="toolbar">
+    <h2>MTG Cards</h2>
+
+    <div class="search">
+      <input
+        type="text"
+        placeholder="Search by card name…"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+        (keyup.enter)="onSearch()"
+      />
+      <button (click)="onSearch()">Search</button>
+      <button class="link" (click)="query.set(''); load()">Reset</button>
+    </div>
+  </header>
+
+  <div class="status" *ngIf="loading()">Loading…</div>
+
+  <table *ngIf="!loading() && filtered().length" class="grid">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Set</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Mana</th>
+        <th class="num">Price</th>
+        <th class="num">Stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of filtered(); trackBy: trackByKey">
+        <td>{{ c.cardNumber }}</td>
+        <td>{{ c.setName }}</td>
+        <td>{{ c.cardName }}</td>
+        <td>{{ c.cardType || '—' }}</td>
+        <td>{{ c.manaValue ?? '—' }}</td>
+        <td class="num">{{ c.price ?? '—' }}</td>
+        <td class="num">{{ c.stock ?? '—' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="empty" *ngIf="!loading() && !filtered().length">
+    No cards found.
+  </p>
+</section>
