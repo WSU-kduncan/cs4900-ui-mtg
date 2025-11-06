@@ -1,0 +1,44 @@
+<section class="card-list">
+  <header class="toolbar">
+    <h2>MTG Orders</h2>
+
+    <div class="search">
+      <input
+        type="text"
+        placeholder="Search by Order ID, status, customer or employee…"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+        (keyup.enter)="onSearch()"
+      />
+      <button (click)="onSearch()">Search</button>
+      <button class="link" (click)="query.set(''); load()">Reset</button>
+    </div>
+  </header>
+
+  <div class="status" *ngIf="loading()">Loading…</div>
+
+  <table *ngIf="!loading() && filtered().length" class="grid">
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Status</th>
+        <th>Customer</th>
+        <th>Employee</th>
+        <th>Order Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of filtered(); trackBy: trackByKey">
+        <td>{{ o.orderID }}</td>
+        <td>{{ o.statusDescription }}</td>
+        <td>{{ o.customerEmail }}</td>
+        <td>{{ o.employeeEmail || '—' }}</td>
+        <td>{{ o.orderDate | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="empty" *ngIf="!loading() && !filtered().length">
+    No orders found.
+  </p>
+</section>

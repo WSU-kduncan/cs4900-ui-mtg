@@ -1,9 +1,0 @@
-@if (orders.length) {
-  <ul class="order-list">
-    @for (o of orders; track o.id) {
-      <li class="order-item">{{ o.name }}</li>
-    }
-  </ul>
-} @else {
-  <p>No orders available.</p>
-}
