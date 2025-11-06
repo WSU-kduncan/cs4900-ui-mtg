@@ -37,12 +37,10 @@ export class CardListComponent {
   });
 
   load() {
-    // local data example—nothing to fetch. keep to satisfy template.
     this.loading.set(false);
   }
 
   onSearch() {
-    // filtered() reacts to query(); nothing else needed
   }
 
   trackByKey = (_: number, c: Card) => `${c.cardNumber}|${c.setName}`;

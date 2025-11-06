@@ -8,10 +8,8 @@ import { CARD_MOCK } from '../features/card/card.mock';
 export class CardService {
   private http = inject(HttpClient);
 
-  // Toggle this to `true` when your API is ready
   private useApi = false;
 
-  // If you have environments, replace this with environment.apiBase
   private readonly baseUrl = 'http://localhost:8080';
 
   getAll(): Observable<Card[]> {
@@ -28,7 +26,6 @@ export class CardService {
         )
       );
     }
-    // if your backend supports ?q=
     return this.http.get<Card[]>(`${this.baseUrl}/card/search?q=${encodeURIComponent(q)}`);
   }
 }
