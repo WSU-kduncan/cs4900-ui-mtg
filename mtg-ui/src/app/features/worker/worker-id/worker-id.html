@@ -1,0 +1,66 @@
+<p>worker-id works!</p>
+<div class="workers-container">
+  <h2>Our Team</h2>
+
+  <div class="worker-search">
+    <input type="text" placeholder="Search workers by name, role, or email" (input)="workerSearch = $any($event.target).value" [value]="workerSearch">
+  </div>
+
+  @if (filteredWorkers.length > 0) {
+    <ul>
+      
+      @for (worker of filteredWorkers; track worker.employeeId) {
+        <li class="worker-item" (click)="selectWorker(worker.employeeId)" [class.selected]="worker.employeeId === selectedWorkerId">
+          <div class="worker-row">
+            <div>
+              <strong>{{ worker.firstName }} {{ worker.lastName }}</strong>
+              (Role: {{ worker.role }})
+              <br>
+              <small>Email: {{ worker.email }}</small>
+            </div>
+            <div class="order-indicator">
+              <span class="badge" [class.active]="hasActiveOrders(worker.employeeId)">
+                @if (getOrderCountForWorker(worker.employeeId) > 0) {
+                  Orders: {{ getOrderCountForWorker(worker.employeeId) }}
+                } @else {
+                  No orders
+                }
+              </span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>There are currently no workers to display.</p>
+  }
+</div>
+
+@if (selectedWorkerId) {
+  <div class="worker-orders">
+    <h3>Orders handled by
+      <em>
+        {{ selectedWorker?.firstName }} {{ selectedWorker?.lastName }}
+      </em>
+    </h3>
+
+    <div class="order-search">
+      <input type="text" placeholder="Search orders by id, customer, or status" (input)="orderSearch = $any($event.target).value" [value]="orderSearch">
+      <button (click)="selectWorker()">Clear</button>
+    </div>
+
+    @if (filteredOrders.length > 0) {
+      <ul class="orders-list">
+        @for (order of filteredOrders; track order.orderId) {
+          <li class="order-item">
+            <strong>Order #{{ order.orderId }}</strong> — {{ order.customer }}
+            <div>Status: {{ order.status }}</div>
+            <div>Items: {{ order.items.join(', ') }}</div>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p>No orders found for this worker.</p>
+    }
+  </div>
+}
