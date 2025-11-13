@@ -1,196 +1,314 @@
-.card-page {
-  padding: 2rem;
-  background: radial-gradient(circle at top, #18263f 0, #050914 55%, #010309 100%);
-  color: #f5f5f7;
+:host {
+  display: block;
   min-height: 100vh;
+  padding: 2rem;
+  background: radial-gradient(circle at top, #202535 0, #05070a 55%, #000 100%);
+  color: #f5f5f5;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .page-header {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 1.5rem;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
 
-  .page-title {
-    h1 {
-      font-size: 2.1rem;
-      margin: 0;
-    }
-    p {
-      margin: 0.35rem 0 0;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.95rem;
-    }
-  }
-}
-
-.search-bar {
-  display: flex;
-  gap: 0.5rem;
-  max-width: 32rem;
-
-  input {
-    flex: 1;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    padding: 0.45rem 0.9rem;
-    background: rgba(3, 9, 20, 0.9);
-    color: #f5f5f7;
-    outline: none;
+  h1 {
+    font-size: 2.2rem;
+    margin: 0;
+    letter-spacing: 0.03em;
   }
 
-  button {
-    border-radius: 999px;
-    padding: 0.45rem 0.9rem;
-    border: 1px solid transparent;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    background: linear-gradient(135deg, #2d7dff, #46c2ff);
-    color: #02040a;
-    &.ghost {
-      background: transparent;
-      color: #d4d4dc;
-      border-color: rgba(255, 255, 255, 0.18);
-    }
+  .subtitle {
+    margin: 0.2rem 0 0;
+    color: hsl(0 0% 75%);
+    font-size: 0.95rem;
   }
 }
 
 .card-panel {
-  margin-top: 1.5rem;
-  background: rgba(5, 11, 28, 0.94);
-  border-radius: 0.9rem;
-  padding: 1.25rem 1.25rem 1.5rem;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75);
+  background: linear-gradient(145deg, #101625, #090c14);
+  border-radius: 1.25rem;
+  padding: 1.5rem 1.75rem 1.75rem;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  display: grid;
+  gap: 1.5rem;
 }
 
-/* add card --------------------------------------------------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.75rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: hsl(0 0% 90%);
+  }
+
+  .search {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    input {
+      width: 18rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid hsl(0 0% 28%);
+      background: hsl(220 16% 15%);
+      color: white;
+      font-size: 0.9rem;
+      outline: none;
+
+      &:focus {
+        border-color: #6ddcff;
+        box-shadow: 0 0 0 1px rgba(109, 220, 255, 0.45);
+      }
+    }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid hsl(0 0% 28%);
+      background: hsl(220 16% 18%);
+      color: white;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+
+      &:hover {
+        background: hsl(220 16% 24%);
+        border-color: #6ddcff;
+      }
+
+      &:active {
+        transform: translateY(1px);
+      }
+
+      &.link {
+        background: transparent;
+        border: none;
+        text-decoration: underline;
+        color: hsl(200 90% 70%);
+
+        &:hover {
+          color: hsl(200 100% 80%);
+        }
+      }
+    }
+  }
+}
+
+/* Add card section */
 
 .add-card {
-  margin-bottom: 1.25rem;
+  background: radial-gradient(circle at top left, rgba(109, 220, 255, 0.12), transparent 60%);
+  border-radius: 1rem;
+  padding: 1rem 1rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 
   h3 {
     margin: 0 0 0.75rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: hsl(0 0% 85%);
   }
 
-  &__row {
+  .add-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr repeat(3, 0.9fr) auto;
-    gap: 0.75rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+    align-items: end;
   }
 
-  &__field {
+  label {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    font-size: 0.8rem;
+    color: hsl(0 0% 78%);
 
-    &.small {
-      max-width: 6rem;
-    }
-
-    &--button {
-      align-items: flex-end;
-      justify-content: flex-end;
-    }
-
-    label {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    input,
-    select {
+    input {
+      padding: 0.4rem 0.6rem;
       border-radius: 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 0.45rem 0.6rem;
+      border: 1px solid hsl(0 0% 30%);
+      background: hsl(220 16% 14%);
+      color: white;
       font-size: 0.9rem;
-      background: rgba(7, 15, 35, 0.95);
-      color: #f5f5f7;
       outline: none;
+
+      &:focus {
+        border-color: #6ddcff;
+        box-shadow: 0 0 0 1px rgba(109, 220, 255, 0.35);
+      }
     }
   }
 
-  button {
-    border-radius: 0.65rem;
-    padding: 0.5rem 1.15rem;
+  .add-btn-cell {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .primary {
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
     border: none;
-    cursor: pointer;
+    background: linear-gradient(135deg, #5ad47a, #8df5b0);
+    color: #051108;
     font-weight: 600;
-    background: linear-gradient(135deg, #1bb36b, #36e57f);
-    color: #02050a;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(90, 212, 122, 0.4);
+    transition: transform 0.05s ease, box-shadow 0.1s ease, filter 0.1s ease;
+
+    &:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 0 22px rgba(90, 212, 122, 0.6);
+    }
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 10px rgba(90, 212, 122, 0.4);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .add-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .add-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .add-btn-cell {
+      justify-content: stretch;
+
+      .primary {
+        width: 100%;
+      }
+    }
   }
 }
 
+/* Table & empty state */
 
 .table-wrapper {
-  margin-top: 0.75rem;
-  border-radius: 0.7rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.04);
   overflow: hidden;
-  background: rgba(3, 9, 20, 0.96);
+  background: radial-gradient(circle at top, #141827 0, #070910 55%);
 }
 
 .grid {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 
   thead {
-    background: radial-gradient(circle at top left, #264d84, #111827 72%);
+    background: linear-gradient(90deg, #283048, #1c2536);
+
+    th {
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      color: hsl(0 0% 90%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .num {
+      text-align: right;
+    }
   }
 
-  th,
+  tbody tr {
+    transition: background 0.12s ease, transform 0.05s ease;
+
+    &:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    &:hover {
+      background: rgba(109, 220, 255, 0.12);
+    }
+  }
+
   td {
-    padding: 0.55rem 0.85rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  th {
-    text-align: left;
-    color: rgba(255, 255, 255, 0.72);
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  tbody tr:nth-child(even) {
-    background: rgba(9, 17, 40, 0.96);
-  }
-
-  tbody tr:nth-child(odd) {
-    background: rgba(6, 13, 31, 0.96);
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .num {
     text-align: right;
-  }
-
-  .editable {
-    cursor: pointer;
-
-    input {
-      width: 100%;
-      text-align: right;
-      border-radius: 0.3rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 0.25rem 0.35rem;
-      background: rgba(4, 12, 26, 0.98);
-      color: #f5f5f7;
-      font-size: 0.85rem;
-    }
+    white-space: nowrap;
   }
 }
 
-.status,
 .empty {
-  padding: 0.75rem 0.25rem;
-  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.5rem;
+  color: hsl(0 0% 75%);
   font-size: 0.9rem;
+  font-style: italic;
+}
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* fully center horizontally */
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 1rem;
+
+  h1 {
+    font-size: 2.4rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .subtitle {
+    margin-top: 0.3rem;
+    font-size: 1rem;
+  }
+}
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* ensures vertical alignment with search bar */
+  padding-bottom: 0.75rem;
+
+  h2 {
+    margin: 0;
+    padding: 0;
+    line-height: 1; /* aligns better visually */
+    font-size: 1.2rem;
+  }
+}
+.page-header h1 {
+  font-size: 2rem;
+  opacity: 0.95;
+}
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers the card panel as well */
 }

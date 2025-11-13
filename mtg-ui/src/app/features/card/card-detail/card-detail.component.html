@@ -1,18 +1,39 @@
-<div class="card-detail">
-  <h3>{{ card().cardName }}</h3>
+<tr>
+  <td>{{ item().cardNumber }}</td>
+  <td>{{ item().setName }}</td>
+  <td>{{ item().cardName }}</td>
+  <td>{{ item().cardType || '—' }}</td>
+  <td>{{ item().manaValue ?? '—' }}</td>
 
-  <p class="meta">
-    <span class="set">Set: {{ card().setName }}</span>
-    <span class="number">#{{ card().cardNumber }}</span>
-  </p>
+  <!-- PRICE – double-click to edit -->
+  <td class="num" (dblclick)="startEditPrice()">
+    @if (editingPrice()) {
+      <input
+        type="number"
+        [value]="draftPrice() ?? ''"
+        (input)="draftPrice.set($any($event.target).valueAsNumber)"
+        (blur)="savePrice()"
+        (keyup.enter)="savePrice()"
+        (keyup.escape)="cancelPrice()"
+      />
+    } @else {
+      {{ item().price ?? '—' }}
+    }
+  </td>
 
-  <p class="line">
-    <span>Type: {{ card().cardType || '—' }}</span>
-    <span>Mana: {{ card().manaValue ?? '—' }}</span>
-  </p>
-
-  <p class="line">
-    <span>Price: {{ card().price ?? '—' }}</span>
-    <span>Stock: {{ card().stock ?? '—' }}</span>
-  </p>
-</div>
+  <!-- STOCK – double-click to edit -->
+  <td class="num" (dblclick)="startEditStock()">
+    @if (editingStock()) {
+      <input
+        type="number"
+        [value]="draftStock() ?? ''"
+        (input)="draftStock.set($any($event.target).valueAsNumber)"
+        (blur)="saveStock()"
+        (keyup.enter)="saveStock()"
+        (keyup.escape)="cancelStock()"
+      />
+    } @else {
+      {{ item().stock ?? '—' }}
+    }
+  </td>
+</tr>
