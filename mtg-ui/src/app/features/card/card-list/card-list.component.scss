@@ -1,26 +1,196 @@
-.card-list { display: grid; gap: 1rem; }
+.card-page {
+  padding: 2rem;
+  background: radial-gradient(circle at top, #18263f 0, #050914 55%, #010309 100%);
+  color: #f5f5f7;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
 
-.toolbar {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  .search {
-    display: flex; gap: .5rem;
-    input {
-      width: 22rem; padding: .5rem .75rem; border-radius: .5rem;
-      border: 1px solid hsl(0 0% 35%); background: hsl(0 0% 12%); color: white;
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1.5rem;
+
+  .page-title {
+    h1 {
+      font-size: 2.1rem;
+      margin: 0;
     }
-    button {
-      padding: .5rem .9rem; border-radius: .5rem; border: 1px solid hsl(0 0% 30%);
-      background: hsl(0 0% 16%); color: white; cursor: pointer;
-      &.link { background: transparent; border: none; text-decoration: underline; }
+    p {
+      margin: 0.35rem 0 0;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
     }
   }
 }
 
-.grid {
-  width: 100%; border-collapse: collapse;
-  th, td { padding: .6rem .75rem; border-bottom: 1px solid hsl(0 0% 20%); }
-  th { text-align: left; color: hsl(0 0% 70%); font-weight: 600; }
-  .num { text-align: right; }
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 32rem;
+
+  input {
+    flex: 1;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    padding: 0.45rem 0.9rem;
+    background: rgba(3, 9, 20, 0.9);
+    color: #f5f5f7;
+    outline: none;
+  }
+
+  button {
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: linear-gradient(135deg, #2d7dff, #46c2ff);
+    color: #02040a;
+    &.ghost {
+      background: transparent;
+      color: #d4d4dc;
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+  }
 }
 
-.status, .empty { color: hsl(0 0% 72%); }
+.card-panel {
+  margin-top: 1.5rem;
+  background: rgba(5, 11, 28, 0.94);
+  border-radius: 0.9rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75);
+}
+
+/* add card --------------------------------------------------- */
+
+.add-card {
+  margin-bottom: 1.25rem;
+
+  h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr repeat(3, 0.9fr) auto;
+    gap: 0.75rem;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &.small {
+      max-width: 6rem;
+    }
+
+    &--button {
+      align-items: flex-end;
+      justify-content: flex-end;
+    }
+
+    label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    input,
+    select {
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 0.45rem 0.6rem;
+      font-size: 0.9rem;
+      background: rgba(7, 15, 35, 0.95);
+      color: #f5f5f7;
+      outline: none;
+    }
+  }
+
+  button {
+    border-radius: 0.65rem;
+    padding: 0.5rem 1.15rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background: linear-gradient(135deg, #1bb36b, #36e57f);
+    color: #02050a;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  }
+}
+
+
+.table-wrapper {
+  margin-top: 0.75rem;
+  border-radius: 0.7rem;
+  overflow: hidden;
+  background: rgba(3, 9, 20, 0.96);
+}
+
+.grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  thead {
+    background: radial-gradient(circle at top left, #264d84, #111827 72%);
+  }
+
+  th,
+  td {
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  th {
+    text-align: left;
+    color: rgba(255, 255, 255, 0.72);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  tbody tr:nth-child(even) {
+    background: rgba(9, 17, 40, 0.96);
+  }
+
+  tbody tr:nth-child(odd) {
+    background: rgba(6, 13, 31, 0.96);
+  }
+
+  .num {
+    text-align: right;
+  }
+
+  .editable {
+    cursor: pointer;
+
+    input {
+      width: 100%;
+      text-align: right;
+      border-radius: 0.3rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.25rem 0.35rem;
+      background: rgba(4, 12, 26, 0.98);
+      color: #f5f5f7;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.status,
+.empty {
+  padding: 0.75rem 0.25rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}

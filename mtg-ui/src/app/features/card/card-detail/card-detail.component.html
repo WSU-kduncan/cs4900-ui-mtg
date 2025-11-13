@@ -1,0 +1,18 @@
+<div class="card-detail">
+  <h3>{{ card().cardName }}</h3>
+
+  <p class="meta">
+    <span class="set">Set: {{ card().setName }}</span>
+    <span class="number">#{{ card().cardNumber }}</span>
+  </p>
+
+  <p class="line">
+    <span>Type: {{ card().cardType || '—' }}</span>
+    <span>Mana: {{ card().manaValue ?? '—' }}</span>
+  </p>
+
+  <p class="line">
+    <span>Price: {{ card().price ?? '—' }}</span>
+    <span>Stock: {{ card().stock ?? '—' }}</span>
+  </p>
+</div>

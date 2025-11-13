@@ -1,48 +1,170 @@
-<section class="card-list">
-  <header class="toolbar">
-    <h2>MTG Cards</h2>
+<section class="card-page">
+  <header class="page-header">
+    <div class="page-title">
+      <h1>MTG Card Manager</h1>
+      <p>Search and manage your Magic: The Gathering cards.</p>
+    </div>
 
-    <div class="search">
+    <form class="search-bar" (submit)="$event.preventDefault(); onSearch()">
       <input
         type="text"
         placeholder="Search by card name…"
         [ngModel]="query()"
         (ngModelChange)="query.set($event)"
-        (keyup.enter)="onSearch()"
+        name="search"
       />
-      <button (click)="onSearch()">Search</button>
-      <button class="link" (click)="query.set(''); load()">Reset</button>
-    </div>
+      <button type="submit">Search</button>
+      <button type="button" class="ghost" (click)="clearSearch()">Clear</button>
+    </form>
   </header>
 
-  <div class="status" *ngIf="loading()">Loading…</div>
+  <section class="card-panel">
+    <section class="add-card">
+      <h3>Add a new card</h3>
 
-  <table *ngIf="!loading() && filtered().length" class="grid">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Set</th>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Mana</th>
-        <th class="num">Price</th>
-        <th class="num">Stock</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let c of filtered(); trackBy: trackByKey">
-        <td>{{ c.cardNumber }}</td>
-        <td>{{ c.setName }}</td>
-        <td>{{ c.cardName }}</td>
-        <td>{{ c.cardType || '—' }}</td>
-        <td>{{ c.manaValue ?? '—' }}</td>
-        <td class="num">{{ c.price ?? '—' }}</td>
-        <td class="num">{{ c.stock ?? '—' }}</td>
-      </tr>
-    </tbody>
-  </table>
+      <div class="add-card__row">
+        <div class="add-card__field">
+          <label for="nameInput">Name</label>
+          <input
+            id="nameInput"
+            type="text"
+            placeholder="e.g., Lightning Bolt"
+            [(ngModel)]="newName"
+          />
+        </div>
 
-  <p class="empty" *ngIf="!loading() && !filtered().length">
-    No cards found.
-  </p>
+        <div class="add-card__field">
+          <label for="setInput">Set code</label>
+          <input
+            id="setInput"
+            type="text"
+            placeholder="e.g., 2XM"
+            [(ngModel)]="newSetCode"
+          />
+        </div>
+
+        <div class="add-card__field">
+          <label for="typeInput">Type (optional)</label>
+          <select id="typeInput" [(ngModel)]="newType">
+            <option value="">Any</option>
+            <option *ngFor="let t of cardTypes" [value]="t">
+              {{ t }}
+            </option>
+          </select>
+        </div>
+
+        <div class="add-card__field small">
+          <label for="manaInput">Mana</label>
+          <input
+            id="manaInput"
+            type="number"
+            min="0"
+            [(ngModel)]="newMana"
+          />
+        </div>
+
+        <div class="add-card__field small">
+          <label for="priceInput">Price</label>
+          <input
+            id="priceInput"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="newPrice"
+          />
+        </div>
+
+        <div class="add-card__field small">
+          <label for="stockInput">Stock</label>
+          <input
+            id="stockInput"
+            type="number"
+            min="0"
+            step="1"
+            [(ngModel)]="newStock"
+          />
+        </div>
+
+        <div class="add-card__field add-card__field--button">
+          <label>&nbsp;</label>
+          <button type="button" (click)="addCard()">Add</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="status" *ngIf="loading()">Loading…</div>
+
+    <div class="table-wrapper" *ngIf="!loading()">
+      <table *ngIf="filtered().length; else emptyState" class="grid">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Set</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Mana</th>
+            <th class="num">Price</th>
+            <th class="num">Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of filtered(); trackBy: trackByKey">
+            <td>{{ c.cardNumber }}</td>
+            <td>{{ c.setName }}</td>
+            <td>{{ c.cardName }}</td>
+            <td>{{ c.cardType || '—' }}</td>
+            <td>{{ c.manaValue }}</td>
+
+            <td
+              class="num editable"
+              (dblclick)="editingPriceId = c.cardNumber"
+            >
+              <ng-container *ngIf="editingPriceId !== c.cardNumber; else priceEdit">
+                {{ c.price }}
+              </ng-container>
+
+              <ng-template #priceEdit>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  [ngModel]="c.price"
+                  (ngModelChange)="updateCard(c, { price: +$event })"
+                  (blur)="editingPriceId = null"
+                  (keyup.enter)="editingPriceId = null"
+                  autofocus
+                />
+              </ng-template>
+            </td>
+
+            <td
+              class="num editable"
+              (dblclick)="editingStockId = c.cardNumber"
+            >
+              <ng-container *ngIf="editingStockId !== c.cardNumber; else stockEdit">
+                {{ c.stock }}
+              </ng-container>
+
+              <ng-template #stockEdit>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  [ngModel]="c.stock"
+                  (ngModelChange)="updateCard(c, { stock: +$event })"
+                  (blur)="editingStockId = null"
+                  (keyup.enter)="editingStockId = null"
+                  autofocus
+                />
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <p class="empty">No cards found.</p>
+      </ng-template>
+    </div>
+  </section>
 </section>
