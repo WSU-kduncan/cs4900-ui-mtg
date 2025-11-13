@@ -4,18 +4,22 @@
   <div class="add-order-form">
     <h3>Add New Order</h3>
 
-    <input type="text"
-           placeholder="Customer e-mail"
-           [value]="newOrderCustomer()"
-           (input)="newOrderCustomer.set($any($event.target).value)" />
-
-    <input type="text"
-           placeholder="Employee e-mail (optional)"
-           [value]="newOrderEmployee()"
-           (input)="newOrderEmployee.set($any($event.target).value)" />
-
-    <select [value]="newOrderStatus()"
-            (change)="newOrderStatus.set($any($event.target).value)">
+    <input
+      type="text"
+      placeholder="Customer e-mail"
+      [value]="newOrderCustomer()"
+      (input)="newOrderCustomer.set($any($event.target).value)"
+    />
+    <input
+      type="text"
+      placeholder="Employee e-mail (optional)"
+      [value]="newOrderEmployee()"
+      (input)="newOrderEmployee.set($any($event.target).value)"
+    />
+    <select
+      [value]="newOrderStatus()"
+      (change)="newOrderStatus.set($any($event.target).value)"
+    >
       <option value="" disabled selected>Choose status</option>
       <option>Pending</option>
       <option>Paid</option>
@@ -23,14 +27,52 @@
       <option>Cancelled</option>
     </select>
 
+    <div class="card-entry">
+      <input
+        type="text"
+        placeholder="Card name"
+        [value]="newCardName()"
+        (input)="newCardName.set($any($event.target).value)"
+      />
+      <input
+        type="number"
+        min="1"
+        placeholder="Count"
+        [value]="newCardCount()"
+        (input)="newCardCount.set(+$any($event.target).value)"
+      />
+      <input
+        type="number"
+        min="0.01"
+        step="0.01"
+        placeholder="Price per card"
+        [value]="newCardPrice()"
+        (input)="newCardPrice.set(+$any($event.target).value)"
+      />
+      <button type="button" (click)="addCard()">+</button>
+    </div>
+
+    @if (cards().length > 0) {
+      <ul class="card-list">
+        @for (c of cards(); track $index) {
+          <li>
+            {{ c.count }}× {{ c.name }} @ ${{ c.price.toFixed(2) }}
+            <button type="button" (click)="removeCard($index)">−</button>
+          </li>
+        }
+      </ul>
+    }
+
     <button (click)="addOrder()">Add Order</button>
   </div>
 
   <div class="order-search">
-    <input type="text"
-           placeholder="Search by Order ID, status, customer or employee…"
-           [value]="query()"
-           (input)="query.set($any($event.target).value)" />
+    <input
+      type="text"
+      placeholder="Search by Order ID, status, customer or employee…"
+      [value]="query()"
+      (input)="query.set($any($event.target).value)"
+    />
     <button (click)="load()">Search</button>
     <button class="link" (click)="query.set(''); load()">Reset</button>
   </div>
@@ -46,16 +88,20 @@
           <div class="order-card">
             <div class="order-header">
               <strong>Order #{{ o.orderID }}</strong>
-              <span class="pill"
-                    [class]="'status-' + o.statusDescription.toLowerCase()">
-                {{ o.statusDescription }}
-              </span>
+              <select
+                [value]="o.statusDescription"
+                (change)="changeStatus(o, $any($event.target).value)"
+              >
+                @for (s of statusOptions; track s) {
+                  <option [value]="s">{{ s }}</option>
+                }
+              </select>
             </div>
 
             <div class="order-meta">
               <div>Customer: {{ o.customerEmail }}</div>
               <div>Employee: {{ o.employeeEmail ?? '—' }}</div>
-              <div>Date: {{ o.orderDate | date:'short' }}</div>
+              <div>Date: {{ o.orderDate | date: 'short' }}</div>
             </div>
 
             <div class="order-actions">
@@ -66,8 +112,13 @@
 
             @if (detailId() === o.orderID) {
               <div class="detail-box">
-                <p><strong>Cards ordered:</strong> {{ dummyCardCount(o.orderID) }}</p>
-                <p><strong>Total cost:</strong> ${{ (dummyCardCount(o.orderID) * PRICE_PER_CARD).toFixed(2) }}</p>
+                <p><strong>Cards:</strong></p>
+                <ul>
+                  @for (c of o.cards; track c.name) {
+                    <li>{{ c.count }}× {{ c.name }} @ ${{ c.price.toFixed(2) }}</li>
+                  }
+                </ul>
+                <p><strong>Total:</strong> ${{ totalCost(o.cards).toFixed(2) }}</p>
               </div>
             }
           </div>
