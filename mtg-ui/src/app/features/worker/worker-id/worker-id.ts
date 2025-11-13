@@ -1,38 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { WorkerService } from '../worker.service';
+import { WorkerDetailComponent } from '../worker-detail/worker-detail.component';
 
 @Component({
   selector: 'app-worker-id',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, WorkerDetailComponent],
   templateUrl: './worker-id.html',
   styleUrls: ['./worker-id.scss'],
 })
 export class WorkerId {
   title = 'Worker ID Component';
-  workers = [
-    {
-      employeeId: 101,
-      firstName: 'Ava',
-      lastName: 'Reed',
-      email: 'ava.reed@mtgshop.com',
-      role: 'Administrator'
-    },
-    {
-      employeeId: 102,
-      firstName: 'Noah',
-      lastName: 'Stone',
-      email: 'noah.stone@mtgshop.com',
-      role: 'Salesperson'
-    },
-    {
-      employeeId: 103,
-      firstName: 'Lia',
-      lastName: 'Park',
-      email: 'lia.park@mtgshop.com',
-      role: 'Manager'
-    }
-  ];
+  
+  workerService = new WorkerService();
+  workers = this.workerService.workers;
 
   orders = [
     { orderId: 5001, employeeId: 102, customer: 'sara@mtgshop.com', orderDate: '2025-10-01T10:00:00', status: 'Pending', items: [] },
@@ -40,24 +22,52 @@ export class WorkerId {
     { orderId: 5003, employeeId: 101, customer: 'josh@mtgshop.com', orderDate: '2025-10-03T15:45:00', status: 'Fulfilled', items: [] },
   ];
 
-  selectedWorkerId: number | null = null;
-  orderSearch = '';
-  workerSearch = '';
+  selectedWorkerId = signal<number | null>(null);
+  orderSearch = signal('');
+  workerSearch = signal('');
+  newWorkerFirstName = signal('');
+  newWorkerLastName = signal('');
+  newWorkerEmail = signal('');
+  newWorkerRole = signal('');
 
   selectWorker(id?: number) {
-    this.selectedWorkerId = id ?? null;
-    this.orderSearch = '';
+    this.selectedWorkerId.set(id ?? null);
+    this.orderSearch.set('');
+  }
+
+  addWorker() {
+    const firstName = this.newWorkerFirstName();
+    const lastName = this.newWorkerLastName();
+    const email = this.newWorkerEmail();
+    const role = this.newWorkerRole();
+
+    if (firstName && lastName && email && role) {
+      const newWorker = {
+        employeeId: this.workerService.generateNewEmployeeId(),
+        firstName,
+        lastName,
+        email,
+        role
+      };
+      this.workerService.addWorker(newWorker);
+      this.newWorkerFirstName.set('');
+      this.newWorkerLastName.set('');
+      this.newWorkerEmail.set('');
+      this.newWorkerRole.set('');
+    }
   }
 
   get selectedWorker() {
-    if (!this.selectedWorkerId) return null;
-    return this.workers.find(w => w.employeeId === this.selectedWorkerId) || null;
+    const id = this.selectedWorkerId();
+    if (!id) return null;
+    return this.workerService.getWorkerById(id) || null;
   }
 
   get filteredOrders() {
-    if (!this.selectedWorkerId) return [];
-    const workerOrders = this.orders.filter(o => o.employeeId === this.selectedWorkerId);
-    const q = this.orderSearch.trim().toLowerCase();
+    const id = this.selectedWorkerId();
+    if (!id) return [];
+    const workerOrders = this.orders.filter(o => o.employeeId === id);
+    const q = this.orderSearch().trim().toLowerCase();
     if (!q) return workerOrders;
     return workerOrders.filter(o =>
       String(o.orderId).includes(q) ||
@@ -67,9 +77,9 @@ export class WorkerId {
   }
 
   get filteredWorkers() {
-    const q = this.workerSearch?.trim().toLowerCase();
-    if (!q) return this.workers;
-    return this.workers.filter(w =>
+    const q = this.workerSearch()?.trim().toLowerCase();
+    if (!q) return this.workers();
+    return this.workers().filter(w =>
       String(w.employeeId).includes(q) ||
       (w.firstName && w.firstName.toLowerCase().includes(q)) ||
       (w.lastName && w.lastName.toLowerCase().includes(q)) ||

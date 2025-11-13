@@ -1,31 +1,30 @@
-<p>worker-id works!</p>
 <div class="workers-container">
   <h2>Our Team</h2>
 
+  <div class="add-worker-form">
+    <h3>Add New Worker</h3>
+    <input type="text" placeholder="First Name" (input)="newWorkerFirstName.set($any($event.target).value)" [value]="newWorkerFirstName()">
+    <input type="text" placeholder="Last Name" (input)="newWorkerLastName.set($any($event.target).value)" [value]="newWorkerLastName()">
+    <input type="email" placeholder="Email" (input)="newWorkerEmail.set($any($event.target).value)" [value]="newWorkerEmail()">
+    <input type="text" placeholder="Role" (input)="newWorkerRole.set($any($event.target).value)" [value]="newWorkerRole()">
+    <button (click)="addWorker()">Add Worker</button>
+  </div>
+
   <div class="worker-search">
-    <input type="text" placeholder="Search workers by name, role, or email" (input)="workerSearch = $any($event.target).value" [value]="workerSearch">
+    <input type="text" placeholder="Search workers by name, role, or email" (input)="workerSearch.set($any($event.target).value)" [value]="workerSearch()">
   </div>
 
   @if (filteredWorkers.length > 0) {
     <ul>
       
       @for (worker of filteredWorkers; track worker.employeeId) {
-        <li class="worker-item" (click)="selectWorker(worker.employeeId)" [class.selected]="worker.employeeId === selectedWorkerId">
+        <li class="worker-item">
           <div class="worker-row">
-            <div>
-              <strong>{{ worker.firstName }} {{ worker.lastName }}</strong>
-              (Role: {{ worker.role }})
-              <br>
-              <small>Email: {{ worker.email }}</small>
-            </div>
-            <div class="order-indicator">
-              <span class="badge" [class.active]="hasActiveOrders(worker.employeeId)">
-                @if (getOrderCountForWorker(worker.employeeId) > 0) {
-                  Orders: {{ getOrderCountForWorker(worker.employeeId) }}
-                } @else {
-                  No orders
-                }
-              </span>
+            <app-worker-detail [worker]="worker"></app-worker-detail>
+            <div class="worker-actions">
+              <button (click)="selectWorker(worker.employeeId)" class="orders-btn">
+                Orders ({{ getOrderCountForWorker(worker.employeeId) }})
+              </button>
             </div>
           </div>
         </li>
@@ -36,7 +35,7 @@
   }
 </div>
 
-@if (selectedWorkerId) {
+@if (selectedWorkerId()) {
   <div class="worker-orders">
     <h3>Orders handled by
       <em>
@@ -45,7 +44,7 @@
     </h3>
 
     <div class="order-search">
-      <input type="text" placeholder="Search orders by id, customer, or status" (input)="orderSearch = $any($event.target).value" [value]="orderSearch">
+      <input type="text" placeholder="Search orders by id, customer, or status" (input)="orderSearch.set($any($event.target).value)" [value]="orderSearch()">
       <button (click)="selectWorker()">Clear</button>
     </div>
 
