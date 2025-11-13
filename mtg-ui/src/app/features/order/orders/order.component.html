@@ -1,0 +1,78 @@
+<div class="orders-container">
+  <h2>MTG Orders</h2>
+
+  <div class="add-order-form">
+    <h3>Add New Order</h3>
+
+    <input type="text"
+           placeholder="Customer e-mail"
+           [value]="newOrderCustomer()"
+           (input)="newOrderCustomer.set($any($event.target).value)" />
+
+    <input type="text"
+           placeholder="Employee e-mail (optional)"
+           [value]="newOrderEmployee()"
+           (input)="newOrderEmployee.set($any($event.target).value)" />
+
+    <select [value]="newOrderStatus()"
+            (change)="newOrderStatus.set($any($event.target).value)">
+      <option value="" disabled selected>Choose status</option>
+      <option>Pending</option>
+      <option>Paid</option>
+      <option>Fulfilled</option>
+      <option>Cancelled</option>
+    </select>
+
+    <button (click)="addOrder()">Add Order</button>
+  </div>
+
+  <div class="order-search">
+    <input type="text"
+           placeholder="Search by Order ID, status, customer or employee…"
+           [value]="query()"
+           (input)="query.set($any($event.target).value)" />
+    <button (click)="load()">Search</button>
+    <button class="link" (click)="query.set(''); load()">Reset</button>
+  </div>
+
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (filtered().length === 0) {
+    <p class="empty">No orders found.</p>
+  } @else {
+    <ul class="orders-list">
+      @for (o of filtered(); track o.orderID) {
+        <li class="order-item">
+          <div class="order-card">
+            <div class="order-header">
+              <strong>Order #{{ o.orderID }}</strong>
+              <span class="pill"
+                    [class]="'status-' + o.statusDescription.toLowerCase()">
+                {{ o.statusDescription }}
+              </span>
+            </div>
+
+            <div class="order-meta">
+              <div>Customer: {{ o.customerEmail }}</div>
+              <div>Employee: {{ o.employeeEmail ?? '—' }}</div>
+              <div>Date: {{ o.orderDate | date:'short' }}</div>
+            </div>
+
+            <div class="order-actions">
+              <button (click)="toggleDetail(o.orderID)">
+                {{ detailId() === o.orderID ? 'Hide' : 'View' }} details
+              </button>
+            </div>
+
+            @if (detailId() === o.orderID) {
+              <div class="detail-box">
+                <p><strong>Cards ordered:</strong> {{ dummyCardCount(o.orderID) }}</p>
+                <p><strong>Total cost:</strong> ${{ (dummyCardCount(o.orderID) * PRICE_PER_CARD).toFixed(2) }}</p>
+              </div>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>
