@@ -1,7 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { CardService } from '../../../services/card.service';
 import { Card } from '../../../shared/models/card.model';
 import { CardDetailComponent } from '../card-detail/card-detail.component';
@@ -14,62 +13,39 @@ import { CardDetailComponent } from '../card-detail/card-detail.component';
   styleUrls: ['./card-list.component.scss'],
 })
 export class CardListComponent {
-  private readonly cardService = inject(CardService);
+  private cardService = inject(CardService);
 
+  readonly loading = signal(false);
   readonly query = signal('');
 
-  // add-card form signals
-  readonly newName = signal('');
-  readonly newSet = signal('');
-  readonly newType = signal('');
-  readonly newMana = signal<number | null>(null);
-  readonly newPrice = signal<number | null>(null);
-  readonly newStock = signal<number | null>(null);
+  readonly cards = signal<Card[]>([]);
 
-  // expose service state
-  readonly cards = this.cardService.cards;
+  constructor() {
+    this.loadCards();
+  }
 
-  // filtered view
-  readonly filtered = computed<Card[]>(() => {
+  loadCards() {
+    this.loading.set(true);
+    this.cardService.getAll().subscribe({
+      next: (res) => {
+        this.cards.set(res);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  readonly filtered = computed(() => {
     const q = this.query().trim().toLowerCase();
     const list = this.cards();
     if (!q) return list;
-    return list.filter(c => c.cardName.toLowerCase().includes(q));
+    return list.filter((c) => c.cardName.toLowerCase().includes(q));
   });
 
-  onSearch() {
-    // no-op: filtering happens reactively as query changes
-  }
-
-  resetSearch() {
+  onSearch() {}
+  onClear() {
     this.query.set('');
   }
 
-  addCard() {
-    const name = this.newName().trim();
-    const set = this.newSet().trim();
-
-    if (!name || !set) {
-      return;
-    }
-
-    this.cardService.addCard({
-      cardName: name,
-      setName: set,
-      cardType: this.newType().trim() || undefined,
-      manaValue: this.newMana() ?? undefined,
-      price: this.newPrice() ?? undefined,
-      stock: this.newStock() ?? undefined,
-    });
-
-    // clear form
-    this.newName.set('');
-    this.newSet.set('');
-    this.newType.set('');
-    this.newMana.set(null);
-    this.newPrice.set(null);
-    this.newStock.set(null);
-  }
-
-  trackByKey = (_: number, c: Card) => `${c.cardNumber}|${c.setName}`;
+  trackByCard = (_: number, c: Card) => c.cardNumber;
 }
