@@ -17,13 +17,13 @@
   @if (filteredWorkers.length > 0) {
     <ul>
       
-      @for (worker of filteredWorkers; track worker.employeeId) {
+      @for (worker of filteredWorkers; track worker.employeeID || $index) {
         <li class="worker-item">
           <div class="worker-row">
             <app-worker-detail [worker]="worker"></app-worker-detail>
             <div class="worker-actions">
-              <button (click)="selectWorker(worker.employeeId)" class="orders-btn">
-                Orders ({{ getOrderCountForWorker(worker.employeeId) }})
+              <button (click)="selectWorker(worker.employeeID)" class="orders-btn">
+                Orders ({{ getOrderCountForWorker(worker.employeeID) }})
               </button>
             </div>
           </div>
@@ -35,7 +35,7 @@
   }
 </div>
 
-@if (selectedWorkerId()) {
+@if (selectedWorkerID()) {
   <div class="worker-orders">
     <h3>Orders handled by
       <em>

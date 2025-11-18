@@ -9,7 +9,7 @@ import { Worker } from '../worker.service';
   template: `
     <div class="worker-detail">
       <h3>{{ worker().firstName }} {{ worker().lastName }}</h3>
-      <p><strong>Employee ID:</strong> {{ worker().employeeId }}</p>
+      <p><strong>Employee ID:</strong> {{ worker().employeeID }}</p>
       <p><strong>Email:</strong> {{ worker().email }}</p>
       <p><strong>Role:</strong> {{ worker().role }}</p>
     </div>

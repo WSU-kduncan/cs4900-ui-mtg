@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WorkerService } from '../worker.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { WorkerService, Worker } from '../worker.service';
 import { WorkerDetailComponent } from '../worker-detail/worker-detail.component';
 
 @Component({
@@ -10,19 +11,20 @@ import { WorkerDetailComponent } from '../worker-detail/worker-detail.component'
   templateUrl: './worker-id.html',
   styleUrls: ['./worker-id.scss'],
 })
-export class WorkerId {
+export class WorkerID {
   title = 'Worker ID Component';
   
-  workerService = new WorkerService();
-  workers = this.workerService.workers;
+  private workerService = inject(WorkerService);
+  
+  apiWorkers = toSignal(this.workerService.getUsers(), { initialValue: [] as Worker[] });
 
   orders = [
-    { orderId: 5001, employeeId: 102, customer: 'sara@mtgshop.com', orderDate: '2025-10-01T10:00:00', status: 'Pending', items: [] },
-    { orderId: 5002, employeeId: 103, customer: 'mike@mtgshop.com', orderDate: '2025-10-02T12:30:00', status: 'Paid', items: [] },
-    { orderId: 5003, employeeId: 101, customer: 'josh@mtgshop.com', orderDate: '2025-10-03T15:45:00', status: 'Fulfilled', items: [] },
+    { orderId: 5001, employeeID: 102, customer: 'sara@mtgshop.com', orderDate: '2025-10-01T10:00:00', status: 'Pending', items: [] },
+    { orderId: 5002, employeeID: 103, customer: 'mike@mtgshop.com', orderDate: '2025-10-02T12:30:00', status: 'Paid', items: [] },
+    { orderId: 5003, employeeID: 101, customer: 'josh@mtgshop.com', orderDate: '2025-10-03T15:45:00', status: 'Fulfilled', items: [] },
   ];
 
-  selectedWorkerId = signal<number | null>(null);
+  selectedWorkerID = signal<number | null>(null);
   orderSearch = signal('');
   workerSearch = signal('');
   newWorkerFirstName = signal('');
@@ -31,7 +33,7 @@ export class WorkerId {
   newWorkerRole = signal('');
 
   selectWorker(id?: number) {
-    this.selectedWorkerId.set(id ?? null);
+    this.selectedWorkerID.set(id ?? null);
     this.orderSearch.set('');
   }
 
@@ -43,7 +45,7 @@ export class WorkerId {
 
     if (firstName && lastName && email && role) {
       const newWorker = {
-        employeeId: this.workerService.generateNewEmployeeId(),
+        employeeID: this.workerService.generateNewEmployeeID(),
         firstName,
         lastName,
         email,
@@ -58,15 +60,15 @@ export class WorkerId {
   }
 
   get selectedWorker() {
-    const id = this.selectedWorkerId();
+    const id = this.selectedWorkerID();
     if (!id) return null;
-    return this.workerService.getWorkerById(id) || null;
+    return this.apiWorkers().find(w => w.employeeID === id) || null;
   }
 
   get filteredOrders() {
-    const id = this.selectedWorkerId();
+    const id = this.selectedWorkerID();
     if (!id) return [];
-    const workerOrders = this.orders.filter(o => o.employeeId === id);
+    const workerOrders = this.orders.filter(o => o.employeeID === id);
     const q = this.orderSearch().trim().toLowerCase();
     if (!q) return workerOrders;
     return workerOrders.filter(o =>
@@ -78,9 +80,10 @@ export class WorkerId {
 
   get filteredWorkers() {
     const q = this.workerSearch()?.trim().toLowerCase();
-    if (!q) return this.workers();
-    return this.workers().filter(w =>
-      String(w.employeeId).includes(q) ||
+    const workers = this.apiWorkers();
+    if (!q) return workers;
+    return workers.filter(w =>
+      String(w.employeeID).includes(q) ||
       (w.firstName && w.firstName.toLowerCase().includes(q)) ||
       (w.lastName && w.lastName.toLowerCase().includes(q)) ||
       (w.email && w.email.toLowerCase().includes(q)) ||
@@ -89,12 +92,12 @@ export class WorkerId {
   }
 
   getOrderCountForWorker(id: number) {
-    return this.orders.filter(o => o.employeeId === id).length;
+    return this.orders.filter(o => o.employeeID === id).length;
   }
 
   hasActiveOrders(id: number) {
     return this.orders.some(o => {
-      if (o.employeeId !== id) return false;
+      if (o.employeeID !== id) return false;
       const s = (o.status || '').toLowerCase();
       return s !== 'delivered' && s !== 'fulfilled';
     });
