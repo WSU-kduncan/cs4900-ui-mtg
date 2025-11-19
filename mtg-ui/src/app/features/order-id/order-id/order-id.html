@@ -1,0 +1,123 @@
+<div class="orders-container">
+  <h2>Order Management</h2>
+
+  <div class="add-order-form">
+    <h3>Create New Order</h3>
+    
+    <div class="form-section">
+      <input type="text" placeholder="Customer Name" (input)="newOrderName.set($any($event.target).value)" [value]="newOrderName()">
+      
+      <input type="email" placeholder="Email" (input)="newOrderEmail.set($any($event.target).value)" [value]="newOrderEmail()">
+      
+      <input type="number" placeholder="Employee ID" 
+        (input)="newEmployeeId.set($any($event.target).value)" 
+        [value]="newEmployeeId()">
+
+      <select (change)="newOrderStatus.set($any($event.target).value)" [value]="newOrderStatus()">
+        <option value="Pending">Pending</option>
+        <option value="Paid">Paid</option>
+        <option value="Fulfilled">Fulfilled</option>
+        <option value="Canceled">Canceled</option>
+      </select>
+    </div>
+
+    <hr class="divider">
+
+    <div class="form-section item-builder">
+      <h4>Add Items to Order:</h4>
+      <div class="input-group">
+        <input type="text" placeholder="Item Name (e.g. Sol Ring)" (input)="newItemName.set($any($event.target).value)" [value]="newItemName()">
+        <input type="number" placeholder="Price" (input)="newItemPrice.set($any($event.target).value)" [value]="newItemPrice()">
+        <button class="btn-secondary" (click)="addItemToDraft()">+ Add to List</button>
+      </div>
+
+      @if (tempItems().length > 0) {
+        <div class="draft-list">
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of tempItems(); track $index) {
+                <tr>
+                  <td>{{ item.itemName }}</td>
+                  <td>{{ item.unitPrice | currency }}</td>
+                  <td><button class="remove-btn" (click)="removeItemFromDraft($index)">Remove</button></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <div class="draft-total">
+            <strong>Total: {{ draftTotal() | currency }}</strong>
+          </div>
+        </div>
+      }
+    </div>
+
+    <button class="btn-primary full-width" [disabled]="tempItems().length === 0" (click)="createOrder()">
+      Create Order ({{ tempItems().length }} Items)
+    </button>
+  </div>
+
+  <div class="order-search">
+    <input type="text" placeholder="Search..." (input)="orderSearch.set($any($event.target).value)" [value]="orderSearch()">
+  </div>
+  
+  @if (filteredOrders().length > 0) {
+    <ul>
+      @for (order of filteredOrders(); track order.orderId) {
+        <li class="order-item">
+          <div class="order-row">
+            <app-order-detail [order]="order"></app-order-detail>
+            
+            <div class="order-actions">
+              <div class="status-select-wrapper">
+                <select 
+                  [value]="order.status" 
+                  (change)="updateStatus(order.orderId, $any($event.target).value)"
+                  [class]="order.status.toLowerCase()">
+                  <option value="Pending">Pending</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Fulfilled">Fulfilled</option>
+                  <option value="Canceled">Canceled</option>
+                </select>
+              </div>
+              <button (click)="selectOrder(order.orderId)" class="edit-btn">
+                Edit Contents
+              </button>
+            </div>
+
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>No orders found.</p>
+  }
+</div>
+
+@if (selectedOrder(); as activeOrder) {
+  <div class="order-items-panel">
+    <div class="panel-header">
+      <h3>Editing Contents: <em>#{{ activeOrder.orderId }}</em></h3>
+      <button class="close-btn" (click)="selectOrder()">Close</button>
+    </div>
+    <h4>Items:</h4>
+    @if (activeOrder.items.length > 0) {
+      <ul class="items-list">
+        @for (item of activeOrder.items; track item.itemName) { 
+          <li class="item-row">
+            <strong>{{ item.itemName }}</strong> 
+            <span>{{ item.unitPrice | currency }}</span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p>No items in this order.</p>
+    }
+  </div>
+}

@@ -1,7 +1,17 @@
 import { Routes } from '@angular/router';
+// Adjust this import path to match where your file actually is
+import { OrderIdComponent } from './features/order-id/order-id/order-id';
 
 export const routes: Routes = [
-  { path: '',   pathMatch: 'full', redirectTo: 'orders' },
-  { path: 'orders', loadComponent: () => import('/home/ethanwoe/cs4900-ui-mtg/mtg-ui/src/app/features/order/orders/orders.component').then(m => m.OrdersComponent) },
-  { path: '**', redirectTo: 'orders' }
+  // 1. Default Path: Load the Order Dashboard immediately
+  { 
+    path: '', 
+    component: OrderIdComponent 
+  },
+
+  // 2. Wildcard: If the user types a wrong URL, go back to Dashboard
+  { 
+    path: '**', 
+    redirectTo: '' 
+  }
 ];
