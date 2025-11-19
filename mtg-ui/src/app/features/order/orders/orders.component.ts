@@ -28,18 +28,18 @@ export class OrdersComponent {
   newCardCount = signal(1);
   newCardPrice = signal(2.5);
   
-  // Local signal for the list of cards being added to a NEW order
+  
   cards = signal<Card[]>([]); 
   
   detailId = signal<number | null>(null);
 
-  // 2. Use toSignal to convert the API Observable into a read-only Signal
+  
   orders = toSignal(this.orderService.getOrders(), { initialValue: [] });
 
-  // 3. Filter the orders based on the search query
+
   filtered = computed(() => {
     const q = this.query().trim().toLowerCase();
-    const list = this.orders(); // Read the signal from the API
+    const list = this.orders(); 
     
     if (!q) return list;
     return list.filter(
@@ -77,7 +77,7 @@ export class OrdersComponent {
 
     if (!customer || !status || cards.length === 0) return;
 
-    // Prepare payload
+   
     const newOrderPayload = {
       orderStatusTypeID: 0, 
       statusDescription: status,
@@ -88,10 +88,9 @@ export class OrdersComponent {
 
     console.log('Submitting new order to API:', newOrderPayload);
 
-    // Logic to call API would go here:
-    // this.orderService.createOrder(newOrderPayload).subscribe(...)
+   
 
-    // Clear form
+  
     this.newOrderCustomer.set('');
     this.newOrderEmployee.set('');
     this.newOrderStatus.set('');
@@ -112,7 +111,6 @@ export class OrdersComponent {
 
   changeStatus(order: Order, newStatus: string): void {
     console.log(`Update Status: Order #${order.orderID} -> ${newStatus}`);
-    // Logic to call API would go here:
-    // this.orderService.updateStatus(order.orderID, newStatus).subscribe(...)
+  
   }
 }
