@@ -1,17 +1,10 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 
-type Card = { name: string; count: number; price: number };
-type Order = {
-  orderID: number;
-  orderStatusTypeID: number;
-  statusDescription: string;
-  customerEmail: string;
-  employeeEmail?: string;
-  orderDate: string;
-  cards: Card[];
-};
+
+import { OrderService, Order, Card } from './order.service';
 
 @Component({
   standalone: true,
@@ -21,43 +14,35 @@ type Order = {
   styleUrls: ['./order.component.scss'],
 })
 export class OrdersComponent {
+  // 1. Inject the Service (requires provideHttpClient in app.config.ts)
+  private orderService = inject(OrderService);
+
   loading = signal(false);
   query = signal('');
 
+  // Form Signals
   newOrderCustomer = signal('');
   newOrderEmployee = signal('');
   newOrderStatus = signal('');
   newCardName = signal('');
   newCardCount = signal(1);
   newCardPrice = signal(2.5);
-  cards = signal<Card[]>([]);
+  
+  // Local signal for the list of cards being added to a NEW order
+  cards = signal<Card[]>([]); 
+  
   detailId = signal<number | null>(null);
 
-  orders = signal<Order[]>([
-    {
-      orderID: 5001,
-      orderStatusTypeID: 1,
-      statusDescription: 'Pending',
-      customerEmail: 'sara@mtgshop.com',
-      employeeEmail: 'noah.stone@mtgshop.com',
-      orderDate: '2025-10-01T10:00:00',
-      cards: [{ name: 'Lightning Bolt', count: 4, price: 2.5 }],
-    },
-    {
-      orderID: 5002,
-      orderStatusTypeID: 2,
-      statusDescription: 'Paid',
-      customerEmail: 'mike@mtgshop.com',
-      employeeEmail: 'lia.park@mtgshop.com',
-      orderDate: '2025-10-02T12:30:00',
-      cards: [{ name: 'Sol Ring', count: 1, price: 15 }],
-    },
-  ]);
+  // 2. Use toSignal to convert the API Observable into a read-only Signal
+  orders = toSignal(this.orderService.getOrders(), { initialValue: [] });
 
+  // 3. Filter the orders based on the search query
   filtered = computed(() => {
     const q = this.query().trim().toLowerCase();
-    if (!q) return this.orders();
-    return this.orders().filter(
+    const list = this.orders(); // Read the signal from the API
+    
+    if (!q) return list;
+    return list.filter(
       (o) =>
         o.orderID.toString().includes(q) ||
         o.statusDescription.toLowerCase().includes(q) ||
@@ -73,6 +58,7 @@ export class OrdersComponent {
     const count = this.newCardCount();
     const price = this.newCardPrice();
     if (!name || count <= 0 || price <= 0) return;
+    
     this.cards.update((list) => [...list, { name, count, price }]);
     this.newCardName.set('');
     this.newCardCount.set(1);
@@ -88,20 +74,24 @@ export class OrdersComponent {
     const employee = this.newOrderEmployee().trim();
     const status = this.newOrderStatus().trim();
     const cards = this.cards();
+
     if (!customer || !status || cards.length === 0) return;
 
-    const maxId = Math.max(...this.orders().map((o) => o.orderID), 5000);
-    const newOrder: Order = {
-      orderID: maxId + 1,
-      orderStatusTypeID: 0,
+    // Prepare payload
+    const newOrderPayload = {
+      orderStatusTypeID: 0, 
       statusDescription: status,
       customerEmail: customer,
       employeeEmail: employee || undefined,
-      orderDate: new Date().toISOString(),
       cards: [...cards],
     };
 
-    this.orders.update((list) => [newOrder, ...list]);
+    console.log('Submitting new order to API:', newOrderPayload);
+
+    // Logic to call API would go here:
+    // this.orderService.createOrder(newOrderPayload).subscribe(...)
+
+    // Clear form
     this.newOrderCustomer.set('');
     this.newOrderEmployee.set('');
     this.newOrderStatus.set('');
@@ -121,12 +111,8 @@ export class OrdersComponent {
   }
 
   changeStatus(order: Order, newStatus: string): void {
-    this.orders.update((list) =>
-      list.map((o) =>
-        o.orderID === order.orderID
-          ? { ...o, statusDescription: newStatus }
-          : o
-      )
-    );
+    console.log(`Update Status: Order #${order.orderID} -> ${newStatus}`);
+    // Logic to call API would go here:
+    // this.orderService.updateStatus(order.orderID, newStatus).subscribe(...)
   }
 }
