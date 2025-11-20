@@ -1,62 +1,7 @@
 <div class="orders-container">
   <h2>Order Management</h2>
 
-  <div class="add-order-form">
-    <h3>Create New Order</h3>
-    
-    <div class="form-section">
-      <input type="text" placeholder="Customer Name" (input)="newOrderName.set($any($event.target).value)" [value]="newOrderName()">
-      <input type="email" placeholder="Email" (input)="newOrderEmail.set($any($event.target).value)" [value]="newOrderEmail()">
-      <input type="number" placeholder="Employee ID" (input)="newEmployeeId.set($any($event.target).value)" [value]="newEmployeeId()">
-      <select (change)="newOrderStatus.set($any($event.target).value)" [value]="newOrderStatus()">
-        <option value="Pending">Pending</option>
-        <option value="Paid">Paid</option>
-        <option value="Fulfilled">Fulfilled</option>
-        <option value="Canceled">Canceled</option>
-      </select>
-    </div>
-
-    <hr class="divider">
-
-    <div class="form-section item-builder">
-      <h4>Add Items to Order:</h4>
-      <div class="input-group">
-        <input type="text" placeholder="Item Name (e.g. Sol Ring)" (input)="newItemName.set($any($event.target).value)" [value]="newItemName()">
-        <input type="number" placeholder="Price" (input)="newItemPrice.set($any($event.target).value)" [value]="newItemPrice()">
-        <button class="btn-secondary" (click)="addItemToDraft()">+ Add to List</button>
-      </div>
-
-      @if (tempItems().length > 0) {
-        <div class="draft-list">
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of tempItems(); track $index) {
-                <tr>
-                  <td>{{ item.itemName }}</td>
-                  <td>{{ item.unitPrice | currency }}</td>
-                  <td><button class="remove-btn" (click)="removeItemFromDraft($index)">Remove</button></td>
-                </tr>
-              }
-            </tbody>
-          </table>
-          <div class="draft-total">
-            <strong>Total: {{ draftTotal() | currency }}</strong>
-          </div>
-        </div>
-      }
-    </div>
-
-    <button class="btn-primary full-width" [disabled]="tempItems().length === 0" (click)="createOrder()">
-      Create Order ({{ tempItems().length }} Items)
-    </button>
-  </div>
+  <app-order-form (orderCreated)="onOrderCreated()"></app-order-form>
 
   <div class="order-search">
     <input type="text" placeholder="Search..." (input)="orderSearch.set($any($event.target).value)" [value]="orderSearch()">
@@ -81,9 +26,14 @@
                   <option value="Canceled">Canceled</option>
                 </select>
               </div>
-              <button (click)="selectOrder(order.orderId)" class="edit-btn">
-                Edit Contents
-              </button>
+              <div class="action-buttons">
+                <button (click)="selectOrder(order.orderId)" class="edit-btn">
+                  Edit Contents
+                </button>
+                <button (click)="deleteOrder(order.orderId)" class="delete-btn">
+                  Delete
+                </button>
+              </div>
             </div>
 
           </div>

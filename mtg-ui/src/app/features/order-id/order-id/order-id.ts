@@ -3,38 +3,36 @@ import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop'; 
 import { OrderService, Order, OrderItem } from '../order.service';
 import { OrderDetailComponent } from '../order-detail/order-detail.component';
+import { OrderForm } from '../order-form/order-form';
 
 @Component({
   selector: 'app-order-id',
   standalone: true,
-  imports: [CommonModule, OrderDetailComponent],
+  imports: [CommonModule, OrderDetailComponent, OrderForm],
   templateUrl: './order-id.html',
   styleUrls: ['./order-id.scss']
 })
 export class OrderIdComponent {
   private orderService = inject(OrderService);
   
-  apiOrders = toSignal(this.orderService.getOrders(), { initialValue: [] as Order[] });
+  private ordersData = signal<Order[]>([]);
+  apiOrders = this.ordersData.asReadonly();
 
   selectedOrderId = signal<number | null>(null);
   orderSearch = signal('');
-
-
-  newOrderName = signal('');
-  newOrderEmail = signal('');
-  newEmployeeId = signal('');
-  newOrderStatus = signal('Pending');
-  
-
-  newItemName = signal('');
-  newItemPrice = signal('');
-  
- 
   editItemName = signal('');
   editItemPrice = signal('');
 
+  constructor() {
+    this.loadOrders();
+  }
 
-  tempItems = signal<OrderItem[]>([]);
+  loadOrders(): void {
+    this.orderService.getOrders().subscribe({
+      next: (orders) => this.ordersData.set(orders),
+      error: (err) => console.error('Error loading orders:', err)
+    });
+  }
 
   selectOrder(id?: number) {
     this.selectedOrderId.set(id ?? null);
@@ -43,7 +41,15 @@ export class OrderIdComponent {
   }
 
   updateStatus(id: number, newStatus: string) {
-    this.orderService.updateOrderStatus(id, newStatus);
+    const order = this.apiOrders().find(o => o.orderId === id);
+    if (!order) return;
+    
+    this.orderService.updateOrderStatus(order, newStatus).subscribe({
+      next: () => {
+        this.loadOrders();
+      },
+      error: (err) => console.error('Error updating status:', err)
+    });
   }
 
   addItemToSelectedOrder() {
@@ -65,61 +71,33 @@ export class OrderIdComponent {
     }
   }
 
-  addItemToDraft() {
-    const name = this.newItemName();
-    const price = parseFloat(this.newItemPrice());
-    if (name && !isNaN(price)) {
-      this.tempItems.update(items => [...items, { itemName: name, unitPrice: price }]);
-      this.newItemName.set('');
-      this.newItemPrice.set('');
-    }
-  }
-
-  removeItemFromDraft(index: number) {
-    this.tempItems.update(items => items.filter((_, i) => i !== index));
-  }
-
-  draftTotal = computed(() => {
-    return this.tempItems().reduce((sum, item) => sum + item.unitPrice, 0);
-  });
-
-  createOrder() {
-    const name = this.newOrderName();
-    const email = this.newOrderEmail();
-    const empIdStr = this.newEmployeeId();
-    const status = this.newOrderStatus();
-    const items = this.tempItems();
-    const empId = parseInt(empIdStr);
-
-    if (name && email && !isNaN(empId) && items.length > 0) {
-      const total = items.reduce((sum, item) => sum + item.unitPrice, 0);
-
-      const newOrder: Order = {
-        orderId: this.orderService.generateNewOrderId(),
-        customerName: name,
-        customerEmail: email,
-        employeeId: empId,
-        status: status,
-        orderDate: new Date(),
-        items: items,
-        totalPrice: total
-      };
-      
-      this.orderService.addOrder(newOrder);
-      
-      this.newOrderName.set('');
-      this.newOrderEmail.set('');
-      this.newEmployeeId.set('');
-      this.newOrderStatus.set('Pending');
-      this.tempItems.set([]);
-    }
-  }
-
   selectedOrder = computed(() => {
     const id = this.selectedOrderId();
     return id ? this.apiOrders().find(o => o.orderId === id) || null : null;
   });
 
+  deleteOrder(orderId: number): void {
+    if (confirm('Are you sure you want to delete this order?')) {
+      console.log('Attempting to delete order:', orderId);
+      this.orderService.deleteOrder(orderId).subscribe({
+        next: () => {
+          console.log('Order deleted successfully:', orderId);
+          this.loadOrders();
+          if (this.selectedOrderId() === orderId) {
+            this.selectedOrderId.set(null);
+          }
+        },
+        error: (err) => {
+          console.error('Error deleting order:', err);
+          alert(`Failed to delete order: ${err.message || 'Unknown error'}`);
+        }
+      });
+    }
+  }
+
+  onOrderCreated(): void {
+    this.loadOrders();
+  }
  
   filteredOrders = computed(() => {
     const q = this.orderSearch()?.trim(); 

@@ -39,6 +39,7 @@ export interface Order {
 export class OrderService {
 
   private http = inject(HttpClient);
+  private readonly baseUrl = 'http://localhost:8080';
 
   private mapStatus(id: number): string {
     switch (id) {
@@ -84,7 +85,7 @@ export class OrderService {
 
   getOrders(): Observable<Order[]> {
     return this.http.get<ApiOrder[]>(
-      'http://localhost:8080/orders',
+      `${this.baseUrl}/orders`,
       {
         headers: {
           'Accept': 'application/json',
@@ -115,6 +116,57 @@ export class OrderService {
     );
   }
 
+  getCustomers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/customers`, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+  }
+
+  createOrder(orderData: {
+    customerName: string;
+    customerEmail: string;
+    employeeId: number;
+    status: string;
+    items: OrderItem[];
+  }): Observable<any> {
+    const payload = {
+      orderStatusTypeID: this.getStatusId(orderData.status),
+      customerEmail: orderData.customerEmail,
+      employeeID: orderData.employeeId
+    };
+
+    console.log('POST payload:', JSON.stringify(payload, null, 2));
+    console.log('POST URL:', `${this.baseUrl}/orders`);
+
+    return this.http.post(`${this.baseUrl}/orders`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+  }
+
+  deleteOrder(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/orders/${id}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  private getStatusId(status: string): number {
+    switch (status) {
+      case 'Pending': return 1;
+      case 'Paid': return 2;
+      case 'Fulfilled': return 3;
+      case 'Canceled': return 4;
+      default: return 1;
+    }
+  }
+
   private orderList = signal<Order[]>([]);
   orders = this.orderList.asReadonly();
 
@@ -129,12 +181,21 @@ export class OrderService {
     return maxId + 1;
   }
 
-  updateOrderStatus(id: number, newStatus: string): void {
-    this.orderList.update(orders =>
-      orders.map(order =>
-        order.orderId === id ? { ...order, status: newStatus } : order
-      )
-    );
+  updateOrderStatus(order: Order, newStatus: string): Observable<void> {
+    const statusId = this.getStatusId(newStatus);
+    const payload = {
+      orderID: order.orderId,
+      orderStatusTypeID: statusId,
+      customerEmail: order.customerEmail,
+      employeeID: order.employeeId
+    };
+    
+    return this.http.put<void>(`${this.baseUrl}/orders/${order.orderId}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
   }
 
   addItemToOrder(orderId: number, item: OrderItem): void {
