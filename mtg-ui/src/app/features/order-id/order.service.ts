@@ -2,12 +2,10 @@ import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-
 export interface ApiOrderItem {
   orderItemID: number;
   itemName: string;
   unitPrice: number;
-  quantity: number; 
 }
 
 export interface ApiOrder {
@@ -15,24 +13,21 @@ export interface ApiOrder {
   orderStatusTypeID: number;
   customerEmail: string;
   employeeID: number;
-  orderDate: any; 
- 
-  orderItems: ApiOrderItem[]; 
+  orderDate: any;
+  orderItems: ApiOrderItem[];
 }
-
 
 export interface OrderItem {
   itemName: string;
   unitPrice: number;
-  quantity: number; 
 }
 
 export interface Order {
   orderId: number;
-  customerName: string; 
+  customerName: string;
   customerEmail: string;
   employeeId: number;
-  status: string;       
+  status: string;
   items: OrderItem[];
   orderDate: Date;
   totalPrice: number;
@@ -42,7 +37,7 @@ export interface Order {
   providedIn: 'root'
 })
 export class OrderService {
-  
+
   private http = inject(HttpClient);
 
   private mapStatus(id: number): string {
@@ -64,17 +59,14 @@ export class OrderService {
       .join(' ');
   }
 
-
   private calcTotal(items: OrderItem[]): number {
     if (!items) return 0;
-    return items.reduce((sum, item) => {
-      const qty = item.quantity; 
-      return sum + (item.unitPrice * qty);
-    }, 0);
+    return items.reduce((sum, item) => sum + item.unitPrice, 0);
   }
 
   private parseJavaDate(dateInput: any): Date {
     if (!dateInput) return new Date();
+
     if (Array.isArray(dateInput)) {
       return new Date(
         dateInput[0],
@@ -85,21 +77,27 @@ export class OrderService {
         dateInput[5] || 0
       );
     }
+
     const parsed = new Date(dateInput);
-    if (isNaN(parsed.getTime())) return new Date();
-    return parsed;
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
   }
 
   getOrders(): Observable<Order[]> {
-    return this.http.get<ApiOrder[]>('http://localhost:8080/MTG-Service/orders').pipe(
-      map(apiOrders => {
-        return apiOrders.map(api => {
-          
-
+    return this.http.get<ApiOrder[]>(
+      'http://localhost:8080/orders',
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        responseType: 'json'
+      }
+    ).pipe(
+      map(apiOrders =>
+        apiOrders.map(api => {
           const realItems: OrderItem[] = (api.orderItems || []).map(i => ({
             itemName: i.itemName,
-            unitPrice: i.unitPrice,
-            quantity: i.quantity 
+            unitPrice: i.unitPrice
           }));
 
           return {
@@ -109,17 +107,14 @@ export class OrderService {
             employeeId: api.employeeID,
             status: this.mapStatus(api.orderStatusTypeID),
             orderDate: this.parseJavaDate(api.orderDate),
-            
-            
-            items: realItems, 
+            items: realItems,
             totalPrice: this.calcTotal(realItems)
           };
-        });
-      })
+        })
+      )
     );
   }
 
-  
   private orderList = signal<Order[]>([]);
   orders = this.orderList.asReadonly();
 
@@ -135,8 +130,8 @@ export class OrderService {
   }
 
   updateOrderStatus(id: number, newStatus: string): void {
-    this.orderList.update(orders => 
-      orders.map(order => 
+    this.orderList.update(orders =>
+      orders.map(order =>
         order.orderId === id ? { ...order, status: newStatus } : order
       )
     );
@@ -147,9 +142,9 @@ export class OrderService {
       orders.map(order => {
         if (order.orderId === orderId) {
           const newItems = [...order.items, item];
-          return { 
-            ...order, 
-            items: newItems, 
+          return {
+            ...order,
+            items: newItems,
             totalPrice: this.calcTotal(newItems)
           };
         }
@@ -163,10 +158,10 @@ export class OrderService {
       orders.map(order => {
         if (order.orderId === orderId) {
           const newItems = order.items.filter((_, index) => index !== itemIndex);
-          return { 
-            ...order, 
-            items: newItems, 
-            totalPrice: this.calcTotal(newItems) 
+          return {
+            ...order,
+            items: newItems,
+            totalPrice: this.calcTotal(newItems)
           };
         }
         return order;

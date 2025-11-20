@@ -17,7 +17,8 @@ import { Order } from '../order.service';
       <p><strong>Customer:</strong> {{ order().customerName }}</p>
       <p class="email">{{ order().customerEmail }} (ID: {{ order().employeeId }})</p>
       
-      <p><strong>Items:</strong> {{ order().items.length }}</p>
+      <p><strong>Items:</strong> {{ (order().items || []).length }}</p>
+      
       <p class="total"><strong>Total:</strong> {{ order().totalPrice | currency }}</p>
     </div>
   `,
@@ -32,10 +33,7 @@ import { Order } from '../order.service';
       transition: border-color 0.3s ease;
     }
 
-    /* Status Colors (Left Border) */
-    /* NOTE: Since we removed toLowerCase(), these classes will only work 
-       if your API returns lowercase status (e.g., "pending"). 
-       If your API returns "Pending", these won't match. */
+    /* Status Colors (Case Sensitive without toLowerCase) */
     .order-detail.Pending { border-left-color: #ffc107; }
     .order-detail.pending { border-left-color: #ffc107; }
     

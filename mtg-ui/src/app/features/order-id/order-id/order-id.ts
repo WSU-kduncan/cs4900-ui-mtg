@@ -12,9 +12,6 @@ import { OrderDetailComponent } from '../order-detail/order-detail.component';
   styleUrls: ['./order-id.scss']
 })
 export class OrderIdComponent {
-  orders() {
-    throw new Error('Method not implemented.');
-  }
   private orderService = inject(OrderService);
   
   apiOrders = toSignal(this.orderService.getOrders(), { initialValue: [] as Order[] });
@@ -22,22 +19,21 @@ export class OrderIdComponent {
   selectedOrderId = signal<number | null>(null);
   orderSearch = signal('');
 
-  // Create Form
+
   newOrderName = signal('');
   newOrderEmail = signal('');
   newEmployeeId = signal('');
   newOrderStatus = signal('Pending');
   
-  // Item Inputs
+
   newItemName = signal('');
-  newItemQuantity = signal('1'); // ✅ Default quantity is 1
   newItemPrice = signal('');
   
-  // Edit Form Inputs
+ 
   editItemName = signal('');
   editItemPrice = signal('');
 
-  // Draft List
+
   tempItems = signal<OrderItem[]>([]);
 
   selectOrder(id?: number) {
@@ -56,9 +52,7 @@ export class OrderIdComponent {
     const price = parseFloat(this.editItemPrice());
 
     if (id && name && !isNaN(price)) {
-      // Note: We default to 1 here for quick edits, 
-      // but you could add a quantity input for edits too.
-      this.orderService.addItemToOrder(id, { itemName: name, unitPrice: price, quantity: 1 });
+      this.orderService.addItemToOrder(id, { itemName: name, unitPrice: price });
       this.editItemName.set('');
       this.editItemPrice.set('');
     }
@@ -74,18 +68,10 @@ export class OrderIdComponent {
   addItemToDraft() {
     const name = this.newItemName();
     const price = parseFloat(this.newItemPrice());
-    const qty = parseInt(this.newItemQuantity());
-
-    if (name && !isNaN(price) && !isNaN(qty) && qty > 0) {
-      this.tempItems.update(items => [
-        ...items, 
-        { itemName: name, unitPrice: price, quantity: qty }
-      ]);
-      
-      // Reset inputs
+    if (name && !isNaN(price)) {
+      this.tempItems.update(items => [...items, { itemName: name, unitPrice: price }]);
       this.newItemName.set('');
       this.newItemPrice.set('');
-      this.newItemQuantity.set('1');
     }
   }
 
@@ -94,10 +80,7 @@ export class OrderIdComponent {
   }
 
   draftTotal = computed(() => {
-    return this.tempItems().reduce((sum, item) => {
-      const q = item.quantity || 1;
-      return sum + (item.unitPrice * q);
-    }, 0);
+    return this.tempItems().reduce((sum, item) => sum + item.unitPrice, 0);
   });
 
   createOrder() {
@@ -109,11 +92,7 @@ export class OrderIdComponent {
     const empId = parseInt(empIdStr);
 
     if (name && email && !isNaN(empId) && items.length > 0) {
-      // Calculate total with quantities
-      const total = items.reduce((sum, item) => {
-        const q = item.quantity || 1;
-        return sum + (item.unitPrice * q);
-      }, 0);
+      const total = items.reduce((sum, item) => sum + item.unitPrice, 0);
 
       const newOrder: Order = {
         orderId: this.orderService.generateNewOrderId(),
@@ -141,6 +120,7 @@ export class OrderIdComponent {
     return id ? this.apiOrders().find(o => o.orderId === id) || null : null;
   });
 
+ 
   filteredOrders = computed(() => {
     const q = this.orderSearch()?.trim(); 
     const list = this.apiOrders(); 
@@ -150,7 +130,7 @@ export class OrderIdComponent {
       String(o.orderId).includes(q) ||
       (o.customerName && o.customerName.includes(q)) || 
       (o.customerEmail && o.customerEmail.includes(q)) || 
-      (o.status && o.status.includes(q))
+      (o.status && o.status.includes(q)) 
     );
   });
 }
