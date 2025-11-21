@@ -1,51 +1,46 @@
-import { Component, computed, signal, inject } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { CardService } from '../../../services/card.service';
 import { Card } from '../../../shared/models/card.model';
+import { CardService } from '../../../services/card.service';
 import { CardDetailComponent } from '../card-detail/card-detail.component';
+import { CardFormComponent } from '../card-form/card-form.component';
 
 @Component({
-  standalone: true,
   selector: 'app-card-list',
-  imports: [CommonModule, FormsModule, CardDetailComponent],
+  standalone: true,
+  imports: [CommonModule, CardDetailComponent, CardFormComponent],
   templateUrl: './card-list.component.html',
   styleUrls: ['./card-list.component.scss'],
 })
 export class CardListComponent {
-  private cardService = inject(CardService);
+  constructor(private cardService: CardService) {}
 
-  readonly loading = signal(false);
-  readonly query = signal('');
+  cards = signal<Card[]>([]);
+  query = signal('');
 
-  readonly cards = signal<Card[]>([]);
-
-  constructor() {
-    this.loadCards();
+  ngOnInit() {
+    this.cardService.getAll().subscribe((data) => this.cards.set(data));
   }
 
-  loadCards() {
-    this.loading.set(true);
-    this.cardService.getAll().subscribe({
-      next: (res) => {
-        this.cards.set(res);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
-  }
-
-  readonly filtered = computed(() => {
-    const q = this.query().trim().toLowerCase();
-    const list = this.cards();
-    if (!q) return list;
-    return list.filter((c) => c.cardName.toLowerCase().includes(q));
+  filteredCards = computed(() => {
+    const q = this.query().toLowerCase();
+    return this.cards().filter((c) =>
+      c.cardName.toLowerCase().includes(q)
+    );
   });
 
-  onSearch() {}
+  onSearch(event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    this.query.set(val);
+  }
+
   onClear() {
     this.query.set('');
   }
 
   trackByCard = (_: number, c: Card) => c.cardNumber;
+
+  createCard(card: Card) {
+    this.cards.set([...this.cards(), card]);
+  }
 }

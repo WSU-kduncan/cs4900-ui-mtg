@@ -2,34 +2,26 @@
   <td>{{ item.cardNumber }}</td>
   <td>{{ item.setName }}</td>
   <td>{{ item.cardName }}</td>
-  <td>{{ item.cardType || '—' }}</td>
+  <td>{{ item.cardType }}</td>
   <td>{{ item.manaValue }}</td>
 
-  <!-- PRICE EDITING -->
-  <td (dblclick)="startPriceEdit()">
+  <td (dblclick)="enablePriceEdit()">
     @if (editingPrice()) {
-      <input 
-        type="number"
-        [value]="draftPrice()"
-        (input)="draftPrice.set($any($event.target).valueAsNumber)"
-        (keyup.enter)="savePrice()"
-        (keyup.escape)="cancelPrice()"
-      />
+      <input type="number"
+             [value]="draftPrice() ?? ''"
+             (input)="draftPrice.set($any($event.target).valueAsNumber)"
+             (keyup.escape)="cancelPrice()" />
     } @else {
       {{ item.price }}
     }
   </td>
 
-  <!-- STOCK EDITING -->
-  <td (dblclick)="startStockEdit()">
+  <td (dblclick)="enableStockEdit()">
     @if (editingStock()) {
-      <input
-        type="number"
-        [value]="draftStock()"
-        (input)="draftStock.set($any($event.target).valueAsNumber)"
-        (keyup.enter)="saveStock()"
-        (keyup.escape)="cancelStock()"
-      />
+      <input type="number"
+             [value]="draftStock() ?? ''"
+             (input)="draftStock.set($any($event.target).valueAsNumber)"
+             (keyup.escape)="cancelStock()" />
     } @else {
       {{ item.stock }}
     }

@@ -1,61 +1,40 @@
-import { Component, Input, signal, inject } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card } from '../../../shared/models/card.model';
-import { CardService } from '../../../services/card.service';
 
 @Component({
   selector: 'app-card-detail',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './card-detail.component.html',
+  styleUrls: ['./card-detail.component.scss'],
 })
 export class CardDetailComponent {
   @Input({ required: true }) item!: Card;
 
-  private cardService = inject(CardService);
+  editingPrice = signal(false);
+  editingStock = signal(false);
 
-  // Inline editing state
-  readonly editingPrice = signal(false);
-  readonly editingStock = signal(false);
+  draftPrice = signal<number | null>(null);
+  draftStock = signal<number | null>(null);
 
-  readonly draftPrice = signal<number | null>(null);
-  readonly draftStock = signal<number | null>(null);
-
-  startPriceEdit() {
-    this.draftPrice.set(this.item.price);
+  enablePriceEdit() {
     this.editingPrice.set(true);
+    this.draftPrice.set(this.item.price ?? 0);
   }
 
-  startStockEdit() {
-    this.draftStock.set(this.item.stock);
+  enableStockEdit() {
     this.editingStock.set(true);
-  }
-
-  savePrice() {
-    const price = this.draftPrice();
-    if (price == null) return;
-
-    this.cardService.updateCard(this.item.cardNumber, { price }).subscribe(() => {
-      this.item.price = price;
-      this.editingPrice.set(false);
-    });
-  }
-
-  saveStock() {
-    const stock = this.draftStock();
-    if (stock == null) return;
-
-    this.cardService.updateCard(this.item.cardNumber, { stock }).subscribe(() => {
-      this.item.stock = stock;
-      this.editingStock.set(false);
-    });
+    this.draftStock.set(this.item.stock ?? 0);
   }
 
   cancelPrice() {
     this.editingPrice.set(false);
+    this.draftPrice.set(null);
   }
 
   cancelStock() {
     this.editingStock.set(false);
+    this.draftStock.set(null);
   }
 }

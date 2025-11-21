@@ -1,26 +1,37 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Card } from '../shared/models/card.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class CardService {
-  private http = inject(HttpClient);
+  private baseUrl = 'http://localhost:8080/MTG-Service/card';
 
-  /** Get all cards from the API */
+  constructor(private http: HttpClient) {}
+
   getAll(): Observable<Card[]> {
-    return this.http.get<Card[]>('http://localhost:8080/MTG-Service/card');
+    return this.http.get<Card[]>(`${this.baseUrl}`);
   }
 
-  /** Search cards by name on the client API (if you wired such an endpoint). */
-  searchByName(q: string): Observable<Card[]> {
-    const params = new HttpParams().set('q', q);
-    return this.http.get<Card[]>(`${'http://localhost:8080/MTG-Service/card'}/search`, { params });
+  getOne(cardNumber: number, setName: string): Observable<Card> {
+    return this.http.get<Card>(`${this.baseUrl}/${cardNumber}/${setName}`);
   }
 
-  /** Update price / stock (or other fields) for a given cardNumber. */
-  updateCard(cardNumber: number, patch: Partial<Card>): Observable<Card> {
-    // if your API key is not cardNumber, swap this part of the URL
-    return this.http.patch<Card>(`${'http://localhost:8080/MTG-Service/card'}/${cardNumber}`, patch);
+  search(query: string): Observable<Card[]> {
+    return this.http.get<Card[]>(`${this.baseUrl}/search?q=${query}`);
+  }
+
+  create(card: Card): Observable<Card> {
+    return this.http.post<Card>(`${this.baseUrl}`, card);
+  }
+
+  update(cardNumber: number, setName: string, dto: Partial<Card>): Observable<Card> {
+    return this.http.put<Card>(`${this.baseUrl}/${cardNumber}/${setName}`, dto);
+  }
+
+  delete(cardNumber: number, setName: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${cardNumber}/${setName}`);
   }
 }

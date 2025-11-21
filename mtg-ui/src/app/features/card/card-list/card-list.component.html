@@ -1,41 +1,28 @@
-<section class="card-list">
+<h2>MTG Cards</h2>
 
-  <header class="header">
-    <h1>MTG Card Manager</h1>
-    <p>Search, add, and manage Magic: The Gathering cards.</p>
-  </header>
+<input placeholder="Search..."
+       [value]="query()"
+       (input)="onSearch($event)" />
+<button (click)="onClear()">Clear</button>
 
-  <section class="search-bar">
-    <input
-      type="text"
-      placeholder="Search by card name..."
-      [ngModel]="query()"
-      (ngModelChange)="query.set($event)"
-      (keyup.enter)="onSearch()"
-    />
+<app-card-form (createCard)="createCard($event)"></app-card-form>
 
-    <button (click)="onSearch()">Search</button>
-    <button class="clear" (click)="onClear()">Clear</button>
-  </section>
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Set</th>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Mana</th>
+      <th>Price</th>
+      <th>Stock</th>
+    </tr>
+  </thead>
 
-  <table class="grid">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Set</th>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Mana</th>
-        <th>Price</th>
-        <th>Stock</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      @for (c of filtered(); track trackByCard) {
-        <app-card-detail [item]="c" />
-      }
-    </tbody>
-  </table>
-
-</section>
+  <tbody>
+    @for (card of filteredCards(); track trackByCard) {
+      <app-card-detail [item]="card"></app-card-detail>
+    }
+  </tbody>
+</table>
