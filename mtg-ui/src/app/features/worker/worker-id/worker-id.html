@@ -1,14 +1,7 @@
 <div class="workers-container">
   <h2>Our Team</h2>
 
-  <div class="add-worker-form">
-    <h3>Add New Worker</h3>
-    <input type="text" placeholder="First Name" (input)="newWorkerFirstName.set($any($event.target).value)" [value]="newWorkerFirstName()">
-    <input type="text" placeholder="Last Name" (input)="newWorkerLastName.set($any($event.target).value)" [value]="newWorkerLastName()">
-    <input type="email" placeholder="Email" (input)="newWorkerEmail.set($any($event.target).value)" [value]="newWorkerEmail()">
-    <input type="text" placeholder="Role" (input)="newWorkerRole.set($any($event.target).value)" [value]="newWorkerRole()">
-    <button (click)="addWorker()">Add Worker</button>
-  </div>
+  <app-worker-form (workerAdded)="onWorkerAdded($event)"></app-worker-form>
 
   <div class="worker-search">
     <input type="text" placeholder="Search workers by name, role, or email" (input)="workerSearch.set($any($event.target).value)" [value]="workerSearch()">
@@ -24,6 +17,9 @@
             <div class="worker-actions">
               <button (click)="selectWorker(worker.employeeID)" class="orders-btn">
                 Orders ({{ getOrderCountForWorker(worker.employeeID) }})
+              </button>
+              <button (click)="deleteWorker(worker.employeeID)" class="delete-btn">
+                Delete
               </button>
             </div>
           </div>

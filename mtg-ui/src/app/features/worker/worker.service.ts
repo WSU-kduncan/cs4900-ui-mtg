@@ -17,34 +17,27 @@ export interface Worker {
 export class WorkerService {
   private http = inject(HttpClient);
   private workerList = signal<Worker[]>([
-    // {
-    //   employeeID: 101,
-    //   firstName: 'Ava',
-    //   lastName: 'Reed',
-    //   email: 'ava.reed@mtgshop.com',
-    //   role: 'Administrator'
-    // },
-    // {
-    //   employeeID: 102,
-    //   firstName: 'Noah',
-    //   lastName: 'Stone',
-    //   email: 'noah.stone@mtgshop.com',
-    //   role: 'Salesperson'
-    // },
-    // {
-    //   employeeID: 103,
-    //   firstName: 'Lia',
-    //   lastName: 'Park',
-    //   email: 'lia.park@mtgshop.com',
-    //   role: 'Manager'
-    // }
+ 
   ]);
 
   workers = this.workerList.asReadonly();
 
   getUsers(): Observable<Worker[]> {
-    return this.http.get<any>('http://localhost:8080/MTG-Service/workers')
+    return this.http.get<Worker[]>('http://localhost:8080/workers', {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 
+  createWorker(worker: Partial<Worker>): Observable<Worker> {
+    return this.http.post<Worker>('http://localhost:8080/workers', worker, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  deleteWorker(id: number): Observable<void> {
+    return this.http.delete<void>(`http://localhost:8080/workers/${id}`, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   addWorker(worker: Worker): void {

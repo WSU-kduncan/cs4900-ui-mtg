@@ -1,22 +1,35 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { WorkerService, Worker } from '../worker.service';
 import { WorkerDetailComponent } from '../worker-detail/worker-detail.component';
+import { WorkerFormComponent } from '../worker-form/worker-form.component';
+import { Subject } from 'rxjs';
+import { switchMap, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-worker-id',
   standalone: true,
-  imports: [CommonModule, WorkerDetailComponent],
+  imports: [CommonModule, WorkerDetailComponent, WorkerFormComponent],
   templateUrl: './worker-id.html',
   styleUrls: ['./worker-id.scss'],
 })
-export class WorkerID {
+export class WorkerID implements OnInit {
   title = 'Worker ID Component';
   
   private workerService = inject(WorkerService);
+  private refreshTrigger = new Subject<void>();
   
-  apiWorkers = toSignal(this.workerService.getUsers(), { initialValue: [] as Worker[] });
+  apiWorkers = toSignal(
+    this.refreshTrigger.pipe(
+      startWith(void 0),
+      switchMap(() => this.workerService.getUsers())
+    ),
+    { initialValue: [] as Worker[] }
+  );
+
+  ngOnInit() {
+  }
 
   orders = [
     { orderId: 5001, employeeID: 102, customer: 'sara@mtgshop.com', orderDate: '2025-10-01T10:00:00', status: 'Pending', items: [] },
@@ -57,6 +70,27 @@ export class WorkerID {
       this.newWorkerEmail.set('');
       this.newWorkerRole.set('');
     }
+  }
+
+  onWorkerAdded(worker: Worker) {
+    this.refreshWorkers();
+  }
+
+  deleteWorker(id: number) {
+    if (confirm('Are you sure you want to delete this worker?')) {
+      this.workerService.deleteWorker(id).subscribe({
+        next: () => {
+          this.refreshWorkers();
+        },
+        error: (error) => {
+          console.error('Error deleting worker:', error);
+        }
+      });
+    }
+  }
+
+  refreshWorkers() {
+    this.refreshTrigger.next();
   }
 
   get selectedWorker() {
