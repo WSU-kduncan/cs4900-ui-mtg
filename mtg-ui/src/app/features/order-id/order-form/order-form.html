@@ -21,7 +21,7 @@
         placeholder="customer@example.com"
       />
       @if (orderForm.get('customerEmail')?.invalid && orderForm.get('customerEmail')?.touched) {
-        <span class="error">Valid email is required</span>
+        <span class="error">Customer email is required</span>
       }
     </div>
 
@@ -34,7 +34,7 @@
         placeholder="Enter employee ID"
       />
       @if (orderForm.get('employeeId')?.invalid && orderForm.get('employeeId')?.touched) {
-        <span class="error">Valid employee ID is required</span>
+        <span class="error">Employee ID is required</span>
       }
     </div>
 

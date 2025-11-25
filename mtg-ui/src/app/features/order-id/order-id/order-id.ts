@@ -88,8 +88,12 @@ export class OrderIdComponent {
           }
         },
         error: (err) => {
-          console.error('Error deleting order:', err);
-          alert(`Failed to delete order: ${err.message || 'Unknown error'}`);
+          console.error('Full error object:', err);
+          console.error('Error status:', err.status);
+          console.error('Error message:', err.message);
+          console.error('Error body:', err.error);
+          const errorMsg = err.error?.error || err.error?.message || err.message || 'Unknown error';
+          alert(`Failed to delete order: ${errorMsg}`);
         }
       });
     }

@@ -144,17 +144,30 @@ export class OrderService {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-      }
-    });
+      },
+      withCredentials: false
+    }).pipe(
+      map((response: any) => {
+        console.log('Success response:', response);
+        return response;
+      })
+    );
   }
 
   deleteOrder(id: number): Observable<void> {
+    console.log('DELETE URL:', `${this.baseUrl}/orders/${id}`);
     return this.http.delete<void>(`${this.baseUrl}/orders/${id}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      }
-    });
+      },
+      withCredentials: false
+    }).pipe(
+      map((response: any) => {
+        console.log('Delete success response:', response);
+        return response;
+      })
+    );
   }
 
   private getStatusId(status: string): number {

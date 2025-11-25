@@ -17,8 +17,8 @@ export class OrderForm {
 
   orderForm = this.fb.group({
     customerName: [''],
-    customerEmail: ['', [Validators.required, Validators.email]],
-    employeeId: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+    customerEmail: ['', Validators.required],
+    employeeId: ['', Validators.required],
     status: ['Pending', Validators.required]
   });
 
@@ -26,10 +26,13 @@ export class OrderForm {
     if (this.orderForm.valid) {
       const formValue = this.orderForm.value;
       
+      const employeeIdValue = formValue.employeeId || '';
+      const employeeId = isNaN(Number(employeeIdValue)) ? 0 : Number(employeeIdValue);
+      
       const newOrder = {
         customerName: formValue.customerName || '',
         customerEmail: formValue.customerEmail || '',
-        employeeId: parseInt(formValue.employeeId || '0'),
+        employeeId: employeeId,
         status: formValue.status || 'Pending',
         items: []
       };
@@ -43,9 +46,13 @@ export class OrderForm {
           this.orderCreated.emit();
         },
         error: (err) => {
-          console.error('Error creating order:', err);
-          console.error('Error details:', err.error);
-          alert(`Failed to create order: ${err.error?.message || err.statusText || 'Server error'}`);
+          console.error('Full error object:', err);
+          console.error('Error status:', err.status);
+          console.error('Error statusText:', err.statusText);
+          console.error('Error message:', err.message);
+          console.error('Error body:', err.error);
+          const errorMsg = err.error?.error || err.error?.message || err.statusText || err.message || 'Unknown error';
+          alert(`Failed to create order: ${errorMsg}`);
         }
       });
     } else {
