@@ -1,0 +1,90 @@
+<div class="orders-container">
+  <h2>Order Management</h2>
+
+  <app-order-form (orderCreated)="onOrderCreated()"></app-order-form>
+
+  <div class="order-search">
+    <input type="text" placeholder="Search..." (input)="orderSearch.set($any($event.target).value)" [value]="orderSearch()">
+  </div>
+  
+  @if (filteredOrders().length > 0) {
+    <ul>
+      @for (order of filteredOrders(); track $index) {
+        <li class="order-item">
+          <div class="order-row">
+            <app-order-detail [order]="order"></app-order-detail>
+            
+            <div class="order-actions">
+              <div class="status-select-wrapper">
+                <select 
+                  [value]="order.status" 
+                  (change)="updateStatus(order.orderId, $any($event.target).value)"
+                  [class]="order.status">
+                  <option value="Pending">Pending</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Fulfilled">Fulfilled</option>
+                  <option value="Canceled">Canceled</option>
+                </select>
+              </div>
+              <div class="action-buttons">
+                <button (click)="selectOrder(order.orderId)" class="edit-btn">
+                  Edit Contents
+                </button>
+                <button (click)="deleteOrder(order.orderId)" class="delete-btn">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>No orders found.</p>
+  }
+</div>
+
+@if (selectedOrder(); as activeOrder) {
+  <div class="order-items-panel">
+    <div class="panel-header">
+      <h3>Editing Contents: <em>#{{ activeOrder.orderId }}</em></h3>
+      <button class="close-btn" (click)="selectOrder()">Close</button>
+    </div>
+
+    <div class="edit-controls">
+      <h4>Add New Item:</h4>
+      <div class="inline-form">
+        <input type="text" placeholder="Item Name" 
+          (input)="editItemName.set($any($event.target).value)" 
+          [value]="editItemName()">
+          
+        <input type="number" placeholder="Price" 
+          (input)="editItemPrice.set($any($event.target).value)" 
+          [value]="editItemPrice()">
+          
+        <button class="add-btn" (click)="addItemToSelectedOrder()">Add</button>
+      </div>
+    </div>
+
+    <h4>Current Items:</h4>
+    @if (activeOrder.items.length > 0) {
+      <ul class="items-list">
+        @for (item of activeOrder.items; track $index) { 
+          <li class="item-row">
+            <div class="info">
+              <strong>{{ item.itemName }}</strong> 
+              <span>{{ item.unitPrice | currency }}</span>
+            </div>
+            <button class="delete-item-btn" (click)="removeItemFromSelectedOrder($index)">Remove</button>
+          </li>
+        }
+      </ul>
+      <div class="total-row">
+        <strong>Total Value: {{ activeOrder.totalPrice | currency }}</strong>
+      </div>
+    } @else {
+      <p>No items in this order.</p>
+    }
+  </div>
+}
