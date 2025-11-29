@@ -1,0 +1,32 @@
+<div class="card-form">
+  <h3>Add Card</h3>
+
+  <input placeholder="Card name"
+         [value]="cardName()"
+         (input)="cardName.set($any($event.target).value)" />
+
+  <input placeholder="Set name"
+         [value]="setName()"
+         (input)="setName.set($any($event.target).value)" />
+
+  <input placeholder="Type"
+         [value]="cardType()"
+         (input)="cardType.set($any($event.target).value)" />
+
+  <input placeholder="Mana value"
+         type="number"
+         [value]="manaValue() ?? ''"
+         (input)="manaValue.set($any($event.target).valueAsNumber)" />
+
+  <input placeholder="Price"
+         type="number"
+         [value]="price() ?? ''"
+         (input)="price.set($any($event.target).valueAsNumber)" />
+
+  <input placeholder="Stock"
+         type="number"
+         [value]="stock() ?? ''"
+         (input)="stock.set($any($event.target).valueAsNumber)" />
+
+  <button (click)="submitCard()">Add</button>
+</div>

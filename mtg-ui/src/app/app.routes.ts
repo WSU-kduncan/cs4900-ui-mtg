@@ -1,23 +1,31 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  // Redirect root to the workers view by default
-  { path: '', pathMatch: 'full', redirectTo: 'workers' },
-
-  // Lazy-load the workers component
+  {
+    path: 'cards',
+    loadComponent: () =>
+      import('./features/card/card-list/card-list.component')
+        .then(m => m.CardListComponent),
+  },
+  { 
+    path: 'orders', 
+    loadComponent: () =>
+      import('./features/order-id/order-id/order-id')
+        .then(m => m.OrderIdComponent)
+  },
   {
     path: 'workers',
     loadComponent: () =>
-      import('./features/worker/worker-id/worker-id').then(m => m.WorkerID),
+      import('./features/worker/worker-id/worker-id')
+        .then(m => m.WorkerID),
   },
-
-  // Lazy-load the orders component
-  {
-    path: 'orders',
-    loadComponent: () =>
-      import('./features/order-id/order-id/order-id').then(m => m.OrderIdComponent),
+  { 
+    path: '', 
+    redirectTo: 'cards', 
+    pathMatch: 'full' 
   },
-
-  // Fallback route
-  { path: '**', redirectTo: 'workers' },
+  { 
+    path: '**', 
+    redirectTo: 'cards' 
+  },
 ];

@@ -1,6 +1,18 @@
 <form [formGroup]="workerForm" (ngSubmit)="onSubmit()" class="worker-form">
   <h3>Add New Worker</h3>
   
+  @if (errorMessage()) {
+    <div class="alert alert-danger">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      {{ successMessage() }}
+    </div>
+  }
+  
   <div class="form-group">
     <label for="firstName">First Name</label>
     <input 
@@ -62,10 +74,10 @@
 
   <button 
     type="submit" 
-    [disabled]="workerForm.invalid || isLoading"
+    [disabled]="workerForm.invalid || isLoading()"
     class="submit-btn"
   >
-    @if (isLoading) {
+    @if (isLoading()) {
       Creating...
     } @else {
       Add Worker

@@ -1,7 +1,7 @@
 <div class="workers-container">
   <h2>Our Team</h2>
 
-  <app-worker-form (workerAdded)="onWorkerAdded($event)"></app-worker-form>
+  <app-worker-form></app-worker-form>
 
   <div class="worker-search">
     <input type="text" placeholder="Search workers by name, role, or email" (input)="workerSearch.set($any($event.target).value)" [value]="workerSearch()">

@@ -1,0 +1,41 @@
+.card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+
+  h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+  }
+
+  .meta,
+  .line {
+    margin: 0;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .set {
+    font-weight: 600;
+  }
+}
+:host {
+  display: contents; 
+}
+
+td {
+  vertical-align: middle;
+}
+
+td.num input {
+  width: 100%;
+  max-width: 5rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.35rem;
+  border: 1px solid hsl(0 0% 35%);
+  background: hsl(0 0% 12%);
+  color: white;
+  font-size: 0.85rem;
+}

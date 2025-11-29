@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, effect } from '@angular/core';
+import { Component, signal, inject, OnInit, effect, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { WorkerService, Worker } from '../worker.service';
@@ -14,8 +14,10 @@ import { switchMap, startWith } from 'rxjs/operators';
   templateUrl: './worker-id.html',
   styleUrls: ['./worker-id.scss'],
 })
-export class WorkerID implements OnInit {
+export class WorkerID implements OnInit, AfterViewInit {
   title = 'Worker ID Component';
+  
+  @ViewChild(WorkerFormComponent) formComponent!: WorkerFormComponent;
   
   private workerService = inject(WorkerService);
   private refreshTrigger = new Subject<void>();
@@ -29,6 +31,17 @@ export class WorkerID implements OnInit {
   );
 
   ngOnInit() {
+    // Initial load already happens via startWith in the pipe
+  }
+
+  ngAfterViewInit() {
+    if (this.formComponent) {
+      this.formComponent.workerAdded$.subscribe((worker: Worker) => {
+        console.log('✅ Parent received workerAdded event:', worker);
+        localStorage.setItem('parentDebug1', 'Parent received: ' + JSON.stringify(worker));
+        this.onWorkerAdded(worker);
+      });
+    }
   }
 
   orders = [
@@ -73,6 +86,8 @@ export class WorkerID implements OnInit {
   }
 
   onWorkerAdded(worker: Worker) {
+    localStorage.setItem('parentDebug1', 'onWorkerAdded called with: ' + JSON.stringify(worker));
+    console.log('👂 onWorkerAdded event received:', worker);
     this.refreshWorkers();
   }
 
@@ -90,6 +105,8 @@ export class WorkerID implements OnInit {
   }
 
   refreshWorkers() {
+    localStorage.setItem('parentDebug2', 'refreshWorkers called');
+    console.log('🔄 refreshWorkers called - fetching from backend');
     this.refreshTrigger.next();
   }
 
