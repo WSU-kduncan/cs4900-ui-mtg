@@ -31,12 +31,6 @@ export class WorkerFormComponent implements OnInit {
       role: ['']
     });
     this.formInitialized.set(true);
-    console.log('Form initialized, valid:', this.workerForm.valid);
-    
-    // Watch form changes
-    this.workerForm.valueChanges.subscribe(() => {
-      console.log('Form changed, valid:', this.workerForm.valid, 'value:', this.workerForm.value);
-    });
   }
 
   onSubmit() {

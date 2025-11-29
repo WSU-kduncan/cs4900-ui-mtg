@@ -21,12 +21,9 @@ export class CardListComponent {
   isLoading = signal(false);
 
   ngOnInit() {
-    console.log('Loading cards from backend...');
     this.isLoading.set(true);
     this.cardService.getAll().subscribe({
       next: (data) => {
-        console.log('Cards loaded successfully:', data);
-        console.log('Number of cards:', data.length);
         this.cards.set(data);
         this.isLoading.set(false);
         this.errorMessage.set(null);
