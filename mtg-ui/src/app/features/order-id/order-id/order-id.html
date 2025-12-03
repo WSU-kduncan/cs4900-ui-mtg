@@ -1,3 +1,11 @@
+<div class="order-input-box">
+  <h3>Paste Order Items</h3>
+  
+  <textarea [(ngModel)]="pastedText" rows="5"
+    placeholder="Paste customer email order list here..."></textarea>
+
+  <button (click)="appendPastedItems()">Add to Orders List</button>
+</div>
 <div class="orders-container">
   <h2>Order Management</h2>
 
@@ -44,6 +52,11 @@
     <p>No orders found.</p>
   }
 </div>
+<textarea rows="5"
+          [(ngModel)]="pastedText"
+          placeholder="Paste items here..."></textarea>
+
+<button (click)="appendPastedItems()">Add Items</button>
 
 @if (selectedOrder(); as activeOrder) {
   <div class="order-items-panel">

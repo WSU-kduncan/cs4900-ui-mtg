@@ -1,0 +1,26 @@
+.login-wrapper {
+  margin: 3rem auto;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  input, button {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  .error {
+    color: red;
+    font-size: 0.9rem;
+  }
+}
+.login-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    margin: 0;
+    font-size: 2rem;
+  }
+}
