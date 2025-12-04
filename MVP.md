@@ -1,0 +1,15 @@
+- Point of View
+  - [ ] Who: Worker, Ceo of Card Store.
+  - [ ] Who NOT: Customers, general public, card vendors.
+- Entities
+  - [ ] What: Workers, Inventory, Orders.
+  - [ ] What NOT: Pictures, URL, descriptions.
+- Actions
+  - [ ] When: Add, Search, Delete.
+  - [ ] When NOT: Payments, help requests, profits.
+- Links
+  - [ ] Where: workers and inventory, card and price.
+  - [ ] Where NOT: worker and customer, customer and inventory.
+- Actions
+  - [ ] Why: Login, stock status, price check.
+  - [ ] Why NOT: Online sales, reports, payments.
