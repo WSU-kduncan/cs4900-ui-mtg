@@ -1,33 +1,44 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  templateUrl: './login.component.html'
+  imports: [CommonModule, FormsModule],   // REQUIRED for *ngIf + [(ngModel)]
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
 
-  username = signal('');
-  password = signal('');
-  error = signal('');
+  router = inject(Router);
 
-  constructor(private router: Router) {}
-
-  updateUsername(v: string) {
-    this.username.set(v);
-  }
-
-  updatePassword(v: string) {
-    this.password.set(v);
-  }
+  email: string = '';
+  password: string = '';
+  errorMessage: string = '';
 
   login() {
-    if (this.username() === 'admin' && this.password() === '1234') {
-      localStorage.setItem('loggedIn', 'true');
-      this.router.navigate(['/cards']);
-    } else {
-      this.error.set('Invalid username or password.');
+    this.errorMessage = '';
+
+    if (!this.email || !this.password) {
+      this.errorMessage = 'Please enter email and password.';
+      return;
     }
+
+    // Temporary login logic — replace with real API call later
+    if (this.email === 'admin' && this.password === 'admin') {
+      // store token ONLY in browser (SSR safe)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', 'valid');
+      }
+      this.router.navigate(['/orders']);
+    } else {
+      this.errorMessage = 'Invalid login.';
+    }
+  }
+
+  error() {
+    return this.errorMessage;
   }
 }

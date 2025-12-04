@@ -1,14 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './services/auth.guard';
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-order-id',
-  standalone: true,
-  templateUrl: './order-id.html',
-  styleUrls: ['./order-id.scss']
-})
-export class OrderIdComponent {} 
 
 export const routes: Routes = [
   {
@@ -17,6 +8,7 @@ export const routes: Routes = [
       import('./features/login/login.component')
         .then(m => m.LoginComponent)
   },
+
   {
     path: 'cards',
     canActivate: [authGuard],
@@ -24,6 +16,7 @@ export const routes: Routes = [
       import('./features/card/card-list/card-list.component')
         .then(m => m.CardListComponent)
   },
+
   {
     path: 'workers',
     canActivate: [authGuard],
@@ -31,6 +24,7 @@ export const routes: Routes = [
       import('./features/worker/worker-id/worker-id')
         .then(m => m.WorkerID)
   },
+
   {
     path: 'orders',
     canActivate: [authGuard],
@@ -38,5 +32,6 @@ export const routes: Routes = [
       import('./features/order-id/order-id/order-id')
         .then(m => m.OrderIdComponent)
   },
+
   { path: '', pathMatch: 'full', redirectTo: 'login' }
 ];
