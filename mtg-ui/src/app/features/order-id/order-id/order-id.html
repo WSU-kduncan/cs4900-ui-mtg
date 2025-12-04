@@ -1,12 +1,3 @@
-<div class="order-input-box">
-  <h3>Paste Order Items</h3>
-
-  <textarea [(ngModel)]="pastedText" rows="5"
-    placeholder="Paste customer email order list here..."></textarea>
-
-  <button (click)="appendPastedItems()">Add to Orders List</button>
-</div>
-
 <div class="orders-container">
   <h2>Order Management</h2>
 
@@ -51,30 +42,67 @@
 
 @if (selectedOrder(); as activeOrder) {
   <div class="order-items-panel">
-    <h3>Editing: {{ activeOrder.orderId }}</h3>
+    <div class="panel-header">
+      <h3>Editing Order #{{ activeOrder.orderId }}</h3>
+      <button (click)="selectOrder()" class="close-btn">Close</button>
+    </div>
 
-    <button (click)="selectOrder()">Close</button>
+    <div class="add-item-form">
+      <h4>Add Item to Order</h4>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Card Number</label>
+          <input type="text" 
+            placeholder="e.g., 123"
+            (input)="editCardNumber.set($any($event.target).value)"
+            [value]="editCardNumber()">
+        </div>
+        <div class="form-field">
+          <label>Set Name</label>
+          <input type="text" 
+            placeholder="e.g., DMU"
+            (input)="editSetName.set($any($event.target).value)"
+            [value]="editSetName()">
+        </div>
+        <div class="form-field">
+          <label>Quantity</label>
+          <input type="number" 
+            min="1"
+            placeholder="1"
+            (input)="editQuantity.set(+$any($event.target).value)"
+            [value]="editQuantity()">
+        </div>
+        <div class="form-field">
+          <label>Price (each)</label>
+          <input type="number" 
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            (input)="editPrice.set(+$any($event.target).value)"
+            [value]="editPrice()">
+        </div>
+      </div>
+      <button (click)="addCardItemToOrder()" class="add-btn">Add to Order</button>
+    </div>
 
-    <h4>Add Item</h4>
-    <input type="text" placeholder="Item"
-      (input)="editItemName.set($any($event.target).value)"
-      [value]="editItemName()">
-
-    <input type="number" placeholder="Price"
-      (input)="editItemPrice.set($any($event.target).value)"
-      [value]="editItemPrice()">
-
-    <button (click)="addItemToSelectedOrder()">Add</button>
-
-    <ul>
-      @for (item of activeOrder.items; track $index) {
-        <li>
-          {{ item.itemName }} - {{ item.unitPrice }}
-          <button (click)="removeItemFromSelectedOrder($index)">Remove</button>
-        </li>
+    <div class="current-items">
+      <h4>Current Items</h4>
+      @if (activeOrder.items.length > 0) {
+        <ul>
+          @for (item of activeOrder.items; track $index) {
+            <li>
+              <span class="item-name">{{ item.itemName }}</span>
+              <span class="price">{{ item.unitPrice | currency }}</span>
+              <button (click)="removeItemFromSelectedOrder($index)" class="remove-btn">Remove</button>
+            </li>
+          }
+        </ul>
+        <div class="total">
+          <strong>Total: {{ activeOrder.totalPrice | currency }}</strong>
+        </div>
+      } @else {
+        <p class="no-items">No items in this order yet.</p>
       }
-    </ul>
-
-    <strong>Total: {{ activeOrder.totalPrice }}</strong>
+    </div>
   </div>
 }

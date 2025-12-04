@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { OrderService, Order, OrderItem } from '../order.service';
 import { OrderFormComponent } from '../order-form/order-form.component';
 import { OrderDetailComponent } from '../order-detail/order-detail.component';
+import { CardService } from '../../../services/card.service';
 
 @Component({
   selector: 'app-order-id',
@@ -16,19 +17,27 @@ import { OrderDetailComponent } from '../order-detail/order-detail.component';
 export class OrderIdComponent {
 
   private orderService = inject(OrderService);
-
+  private cardService = inject(CardService);
+  
   orders = signal<Order[]>([]);
   orderSearch = signal<string>('');
   selectedOrder = signal<Order | null>(null);
 
   pastedText = '';
-
-  editItemName = signal<string>('');
-  editItemPrice = signal<number>(0);
+  
+  // Edit item fields
+  editCardNumber = signal<string>('');
+  editSetName = signal<string>('');
+  editQuantity = signal<number>(1);
+  editPrice = signal<number>(0);
 
   constructor() {
     this.orderService.getOrders().subscribe({
-      next: list => this.orders.set(list),
+      next: list => {
+        this.orders.set(list);
+        // Also update the service's internal order list for local modifications
+        list.forEach(order => this.orderService.addOrder(order));
+      },
       error: err => console.error('Error loading orders:', err)
     });
   }
@@ -99,49 +108,109 @@ export class OrderIdComponent {
     this.pastedText = '';
   }
 
-  addItemToSelectedOrder() {
+  addCardItemToOrder() {
+    console.log('Add button clicked');
     const order = this.selectedOrder();
-    if (!order) return;
+    console.log('Selected order:', order);
+    
+    if (!order) {
+      console.log('No order selected');
+      return;
+    }
 
-    const updatedItems: OrderItem[] = [
-      ...order.items,
-      { itemName: this.editItemName(), unitPrice: Number(this.editItemPrice()) }
-    ];
+    const cardNum = this.editCardNumber().trim();
+    const setName = this.editSetName().trim();
+    const quantity = this.editQuantity();
+    const price = this.editPrice();
 
-    const updatedOrder = { 
-      ...order, 
-      items: updatedItems, 
-      totalPrice: this.calcTotal(updatedItems) 
-    };
+    console.log('Form values:', { cardNum, setName, quantity, price });
 
-    this.orders.update(list =>
-      list.map(o => o.orderId === order.orderId ? updatedOrder : o)
-    );
+    if (!cardNum || !setName || quantity <= 0) {
+      alert('Please fill in card number, set name, and valid quantity');
+      return;
+    }
 
-    this.selectedOrder.set(updatedOrder);
-    this.editItemName.set('');
-    this.editItemPrice.set(0);
+    // First, check if the card exists in the database
+    this.cardService.getOne(parseInt(cardNum), setName.toUpperCase()).subscribe({
+      next: (card) => {
+        // Card exists, check if there's enough stock
+        if (card.stock < quantity) {
+          alert(`Not enough stock! Only ${card.stock} available for ${card.cardName} (${setName})`);
+          return;
+        }
+
+        // Card exists and has enough stock, proceed to add to order
+        const newItem: OrderItem = {
+          cardNumber: parseInt(cardNum),
+          setName: setName.toUpperCase(),
+          quantity: quantity,
+          price: price
+        };
+
+        console.log('Sending item to backend:', newItem);
+
+        this.orderService.addItemToOrder(order.orderId, newItem).subscribe({
+          next: () => {
+            console.log('Item added successfully to backend');
+            // Wait a bit for backend to process, then reload
+            setTimeout(() => {
+              this.reloadOrders();
+            }, 500);
+            this.editCardNumber.set('');
+            this.editSetName.set('');
+            this.editQuantity.set(1);
+            this.editPrice.set(0);
+          },
+          error: err => {
+            console.error('Failed to add item:', err);
+            alert(`Error adding item: ${err.message || 'Unknown error'}`);
+          }
+        });
+      },
+      error: (err) => {
+        // Card doesn't exist
+        console.error('Card not found:', err);
+        alert(`Card ${cardNum} from set ${setName.toUpperCase()} is not in stock or does not exist in the database.`);
+      }
+    });
   }
 
   removeItemFromSelectedOrder(index: number) {
     const order = this.selectedOrder();
     if (!order) return;
 
-    const updatedItems = order.items.filter((_, i) => i !== index);
-    const updatedOrder = { 
-      ...order, 
-      items: updatedItems, 
-      totalPrice: this.calcTotal(updatedItems) 
-    };
+    const item = order.items[index];
+    if (!item?.orderItemID) {
+      console.error('Cannot remove item: missing orderItemID');
+      return;
+    }
 
-    this.orders.update(list =>
-      list.map(o => o.orderId === order.orderId ? updatedOrder : o)
-    );
+    this.orderService.removeItemFromOrder(order.orderId, item.orderItemID).subscribe({
+      next: () => {
+        this.reloadOrders();
+      },
+      error: err => console.error('Failed to remove item:', err)
+    });
+  }
 
-    this.selectedOrder.set(updatedOrder);
+  reloadOrders() {
+    console.log('Reloading orders from backend...');
+    this.orderService.getOrders().subscribe({
+      next: list => {
+        console.log('Orders reloaded:', list);
+        this.orders.set(list);
+        const currentSelectedId = this.selectedOrder()?.orderId;
+        if (currentSelectedId) {
+          const updated = list.find(o => o.orderId === currentSelectedId);
+          console.log('Updated selected order:', updated);
+          this.selectedOrder.set(updated || null);
+        }
+      },
+      error: err => console.error('Error reloading orders:', err)
+    });
   }
 
   private calcTotal(items: OrderItem[]): number {
-    return items.reduce((s, i) => s + i.unitPrice, 0);
+    return items.reduce((s, i) => s + (i.unitPrice || i.price || 0), 0);
   }
 }

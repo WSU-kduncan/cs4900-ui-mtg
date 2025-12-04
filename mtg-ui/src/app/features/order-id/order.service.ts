@@ -4,8 +4,10 @@ import { Observable, map } from 'rxjs';
 
 export interface ApiOrderItem {
   orderItemID: number;
-  itemName: string;
-  unitPrice: number;
+  cardNumber: number;
+  setName: string;
+  quantity: number;
+  price: number;
 }
 
 export interface ApiOrder {
@@ -18,8 +20,14 @@ export interface ApiOrder {
 }
 
 export interface OrderItem {
-  itemName: string;
-  unitPrice: number;
+  orderItemID?: number;
+  cardNumber?: number;
+  setName?: string;
+  quantity?: number;
+  price?: number;
+  // For display purposes
+  itemName?: string;
+  unitPrice?: number;
 }
 
 export interface Order {
@@ -62,7 +70,7 @@ export class OrderService {
 
   private calcTotal(items: OrderItem[]): number {
     if (!items) return 0;
-    return items.reduce((sum, item) => sum + item.unitPrice, 0);
+    return items.reduce((sum, item) => sum + (item.unitPrice || item.price || 0), 0);
   }
 
   private parseJavaDate(dateInput: any): Date {
@@ -97,8 +105,14 @@ export class OrderService {
       map(apiOrders =>
         apiOrders.map(api => {
           const realItems: OrderItem[] = (api.orderItems || []).map(i => ({
-            itemName: i.itemName,
-            unitPrice: i.unitPrice
+            orderItemID: i.orderItemID,
+            cardNumber: i.cardNumber,
+            setName: i.setName,
+            quantity: i.quantity,
+            price: i.price,
+            // Create display name for UI
+            itemName: `${i.cardNumber} - ${i.setName} (x${i.quantity})`,
+            unitPrice: i.price * i.quantity
           }));
 
           return {
@@ -198,35 +212,28 @@ export class OrderService {
     });
   }
 
-  addItemToOrder(orderId: number, item: OrderItem): void {
-    this.orderList.update(orders =>
-      orders.map(order => {
-        if (order.orderId === orderId) {
-          const newItems = [...order.items, item];
-          return {
-            ...order,
-            items: newItems,
-            totalPrice: this.calcTotal(newItems)
-          };
-        }
-        return order;
-      })
-    );
+  addItemToOrder(orderId: number, item: OrderItem): Observable<void> {
+    const payload = {
+      cardNumber: item.cardNumber,
+      setName: item.setName,
+      quantity: item.quantity,
+      price: item.price
+    };
+    
+    return this.http.post<void>(`${this.baseUrl}/orders/${orderId}/items`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
   }
 
-  removeItemFromOrder(orderId: number, itemIndex: number): void {
-    this.orderList.update(orders =>
-      orders.map(order => {
-        if (order.orderId === orderId) {
-          const newItems = order.items.filter((_, index) => index !== itemIndex);
-          return {
-            ...order,
-            items: newItems,
-            totalPrice: this.calcTotal(newItems)
-          };
-        }
-        return order;
-      })
-    );
+  removeItemFromOrder(orderId: number, itemId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/orders/${orderId}/items/${itemId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
   }
 }
