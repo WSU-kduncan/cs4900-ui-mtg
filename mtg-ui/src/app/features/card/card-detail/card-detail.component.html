@@ -3,7 +3,6 @@
   <td><span class="badge">{{ item.setName }}</span></td>
   <td class="card-name">{{ item.cardName }}</td>
   <td class="card-type">{{ item.cardType }}</td>
-  <td class="mana-value">{{ item.manaValue }}</td>
   <td><span class="condition-badge" [class]="'condition-' + item.cardCondition.toLowerCase()">{{ item.cardCondition }}</span></td>
 
   <td (dblclick)="enablePriceEdit()">
