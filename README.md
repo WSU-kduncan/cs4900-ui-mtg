@@ -13,6 +13,5 @@
   * Second Goal:
     * Description:
 
-   * Third Goal:
-    * Description: 
----
+  * Third Goal: 
+    * Description
