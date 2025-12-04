@@ -151,9 +151,6 @@ export class OrderService {
       employeeID: orderData.employeeId
     };
 
-    console.log('POST payload:', JSON.stringify(payload, null, 2));
-    console.log('POST URL:', `${this.baseUrl}/orders`);
-
     return this.http.post(`${this.baseUrl}/orders`, payload, {
       headers: {
         'Content-Type': 'application/json',

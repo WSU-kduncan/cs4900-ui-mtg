@@ -34,49 +34,31 @@ export class WorkerFormComponent implements OnInit {
   }
 
   onSubmit() {
-    const msg1 = 'FORM SUBMIT START';
-    console.log(msg1);
-    localStorage.setItem('debug1', msg1);
-    
-    // Clear previous messages
     this.errorMessage.set(null);
     this.successMessage.set(null);
     
     if (this.workerForm.valid) {
-      const msg2 = 'Form valid - sending to backend';
-      console.log(msg2);
-      localStorage.setItem('debug2', msg2);
-      
       this.isLoading.set(true);
       const newWorker = this.workerForm.value;
       
       this.workerService.createWorker(newWorker).subscribe({
         next: (createdWorker: Worker) => {
-          const msg3 = 'SUCCESS - calling workerAdded emit';
-          console.log(msg3);
-          localStorage.setItem('debug3', msg3);
           this.isLoading.set(false);
           this.successMessage.set('Worker created successfully!');
           this.workerAdded$.next(createdWorker);
           this.workerForm.reset();
         },
         error: (error) => {
-          const msg4 = 'ERROR - ' + (error?.message || 'unknown');
-          console.error('Error creating worker:', error);
-          localStorage.setItem('debug4', msg4);
-          
           this.isLoading.set(false);
           
-          // Set user-friendly error message
           if (error.status === 404) {
             this.errorMessage.set('Service endpoint not found. Please check if the backend is running.');
           } else if (error.status === 0) {
             this.errorMessage.set('Cannot connect to server. Please check if the backend is running.');
           } else {
-            this.errorMessage.set(`Failed to create worker: ${error.message || 'Unknown error'}`);
+            this.errorMessage.set('Failed to create worker.');
           }
           
-          // Fallback: create mock worker for development
           const newWorkerWithID: Worker = {
             employeeID: Math.floor(Math.random() * 10000),
             ...newWorker

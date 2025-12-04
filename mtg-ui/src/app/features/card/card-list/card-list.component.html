@@ -1,6 +1,4 @@
 <div ngSkipHydration>
-  <h2>MTG Cards</h2>
-
   @if (errorMessage()) {
     <div class="alert alert-danger" role="alert">
       {{ errorMessage() }}
@@ -11,28 +9,35 @@
     <div>Loading cards...</div>
   }
 
-  <input placeholder="Search..."
-         [value]="query()"
-         (input)="onSearch($event)" />
-  <button (click)="onClear()">Clear</button>
-
   <app-card-form (createCard)="createCard($event)"></app-card-form>
+
+  <div class="search-section">
+    <h3>Search Cards</h3>
+    <div class="search-controls">
+      <input placeholder="Search..."
+             [value]="query()"
+             (input)="onSearch($event)" />
+      <button (click)="onClear()">Clear</button>
+    </div>
+  </div>
 
   <table>
     <thead>
       <tr>
-        <th>#</th>
+        <th>Card #</th>
         <th>Set</th>
         <th>Name</th>
         <th>Type</th>
         <th>Mana</th>
+        <th>Condition</th>
         <th>Price</th>
         <th>Stock</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       @for (card of filteredCards(); track trackByCard($index, card)) {
-        <app-card-detail [item]="card"></app-card-detail>
+        <app-card-detail [item]="card" (cardDeleted)="onCardDeleted()"></app-card-detail>
       }
     </tbody>
   </table>

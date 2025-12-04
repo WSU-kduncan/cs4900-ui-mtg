@@ -37,8 +37,6 @@ export class WorkerID implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     if (this.formComponent) {
       this.formComponent.workerAdded$.subscribe((worker: Worker) => {
-        console.log('✅ Parent received workerAdded event:', worker);
-        localStorage.setItem('parentDebug1', 'Parent received: ' + JSON.stringify(worker));
         this.onWorkerAdded(worker);
       });
     }
@@ -86,8 +84,6 @@ export class WorkerID implements OnInit, AfterViewInit {
   }
 
   onWorkerAdded(worker: Worker) {
-    localStorage.setItem('parentDebug1', 'onWorkerAdded called with: ' + JSON.stringify(worker));
-    console.log('👂 onWorkerAdded event received:', worker);
     this.refreshWorkers();
   }
 
@@ -96,17 +92,12 @@ export class WorkerID implements OnInit, AfterViewInit {
       this.workerService.deleteWorker(id).subscribe({
         next: () => {
           this.refreshWorkers();
-        },
-        error: (error) => {
-          console.error('Error deleting worker:', error);
         }
       });
     }
   }
 
   refreshWorkers() {
-    localStorage.setItem('parentDebug2', 'refreshWorkers called');
-    console.log('🔄 refreshWorkers called - fetching from backend');
     this.refreshTrigger.next();
   }
 

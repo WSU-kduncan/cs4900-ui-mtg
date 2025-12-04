@@ -1,9 +1,9 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
-  color: #f9fafb;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #fff;
+  color: #333;
+  font-family: 'Courier Prime', monospace;
 }
 
 .shell {
@@ -18,37 +18,39 @@
   justify-content: space-between;
   gap: 1.5rem;
   margin-bottom: 1.75rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+  border-bottom: 2px solid var(--primary-blurple);
   padding-bottom: 1rem;
 }
 
 .shell__title {
   font-size: 2.25rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.03em;
   margin: 0;
+  color: var(--primary-blurple);
+  font-family: 'Courier Prime', monospace;
 }
 
 .shell__subtitle {
   margin: 0.35rem 0 0;
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: var(--gray-brown);
 }
 
 .shell__content {
   margin-top: 1.25rem;
-  background: rgba(15, 23, 42, 0.9);
+  background: #fff;
   border-radius: 0.75rem;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
+  border: 2px solid var(--gray-light);
   padding: 1.5rem 1.5rem 1.75rem;
   overflow: hidden;
 }
 .app-shell {
   min-height: 100vh;
   padding: 1.5rem 2rem;
-  background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
-  color: #e5e7eb;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #333;
+  font-family: 'Courier Prime', monospace;
 }
 
 .app-header {
@@ -56,7 +58,7 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+  border-bottom: 2px solid var(--primary-blurple);
   margin-bottom: 1rem;
 }
 
@@ -66,27 +68,27 @@
   
   .nav-btn {
     padding: 0.6rem 1.5rem;
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: #fff;
+    border: 2px solid var(--primary-blurple);
     border-radius: 0.5rem;
-    color: #e5e7eb;
+    color: var(--primary-blurple);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    font-family: 'Courier Prime', monospace;
     transition: all 0.2s ease;
     cursor: pointer;
     
     &:hover {
-      background: rgba(51, 65, 85, 0.9);
-      border-color: rgba(148, 163, 184, 0.5);
+      background: var(--gray-light);
       transform: translateY(-1px);
     }
     
     &.active {
-      background: linear-gradient(135deg, #f97316, #7c3aed);
-      border-color: transparent;
+      background: var(--primary-blurple);
+      border-color: var(--primary-blurple);
       color: #fff;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(129, 120, 255, 0.3);
     }
   }
 }
@@ -99,13 +101,15 @@
   h1 {
     margin: 0;
     font-size: 1.7rem;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--primary-blurple);
+    font-family: 'Courier Prime', monospace;
   }
 
   .app-title__subtitle {
     margin: 0.2rem 0 0;
     font-size: 0.9rem;
-    color: #9ca3af;
+    color: var(--gray-brown);
   }
 }
 
@@ -116,8 +120,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 30% 0%, #f97316, #7c3aed);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.95);
+  background: var(--primary-sunset);
+  color: #fff;
   font-size: 1.3rem;
 }
 

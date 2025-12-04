@@ -1,6 +1,7 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card } from '../../../shared/models/card.model';
+import { CardService } from '../../../services/card.service';
 
 @Component({
   selector: 'app-card-detail',
@@ -11,6 +12,9 @@ import { Card } from '../../../shared/models/card.model';
 })
 export class CardDetailComponent {
   @Input({ required: true }) item!: Card;
+  
+  cardDeleted = output<void>();
+  private cardService = inject(CardService);
 
   editingPrice = signal(false);
   editingStock = signal(false);
@@ -36,5 +40,13 @@ export class CardDetailComponent {
   cancelStock() {
     this.editingStock.set(false);
     this.draftStock.set(null);
+  }
+  
+  deleteCard() {
+    if (confirm(`Delete card "${this.item.cardName}"?`)) {
+      this.cardService.delete(this.item.cardNumber, this.item.setName).subscribe({
+        next: () => this.cardDeleted.emit()
+      });
+    }
   }
 }

@@ -1,17 +1,18 @@
 .order-form-container {
   margin: 2rem 0;
   padding: 1.5rem;
-  background: white;
+  background: var(--gray-light);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 2px solid #28a745;
+  border: 2px solid var(--primary-blurple);
 
   h3 {
     margin-top: 0;
     margin-bottom: 1rem;
-    color: #1b5e20;
-    border-bottom: 2px solid #e8f5e9;
+    color: var(--primary-blurple);
+    border-bottom: 2px solid var(--primary-blurple);
     padding-bottom: 10px;
+    font-weight: 700;
+    font-family: 'Courier Prime', monospace;
   }
 
   form {

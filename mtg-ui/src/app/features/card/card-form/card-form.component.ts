@@ -12,19 +12,22 @@ import { Card } from '../../../shared/models/card.model';
 export class CardFormComponent {
   @Output() createCard = new EventEmitter<Card>();
 
-  cardName = signal('');
+  cardNumber = signal<number | null>(null);
   setName = signal('');
+  cardName = signal('');
   cardType = signal('');
+  cardCondition = signal('NM');
   manaValue = signal<number | null>(null);
   price = signal<number | null>(null);
   stock = signal<number | null>(null);
 
   submitCard() {
     const newCard: Card = {
-      cardNumber: Math.floor(Math.random() * 1000),
-      cardName: this.cardName(),
+      cardNumber: this.cardNumber() ?? Math.floor(Math.random() * 1000),
       setName: this.setName(),
+      cardName: this.cardName(),
       cardType: this.cardType(),
+      cardCondition: this.cardCondition(),
       manaValue: this.manaValue() ?? 0,
       price: this.price() ?? 0,
       stock: this.stock() ?? 0,
@@ -32,9 +35,11 @@ export class CardFormComponent {
 
     this.createCard.emit(newCard);
 
-    this.cardName.set('');
+    this.cardNumber.set(null);
     this.setName.set('');
+    this.cardName.set('');
     this.cardType.set('');
+    this.cardCondition.set('NM');
     this.manaValue.set(null);
     this.price.set(null);
     this.stock.set(null);

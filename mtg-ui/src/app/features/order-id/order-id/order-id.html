@@ -4,6 +4,7 @@
   <app-order-form (orderCreated)="onOrderCreated()"></app-order-form>
 
   <div class="order-search">
+    <h3>Search Orders</h3>
     <input type="text" placeholder="Search..."
       (input)="orderSearch.set($any($event.target).value)"
       [value]="orderSearch()">
@@ -27,8 +28,8 @@
                 <option value="Canceled">Canceled</option>
               </select>
 
-              <button (click)="selectOrder(order.orderId)">Edit Contents</button>
-              <button (click)="deleteOrder(order.orderId)">Delete</button>
+              <button class="edit-btn" (click)="selectOrder(order.orderId)">Edit Contents</button>
+              <button class="delete-btn" (click)="deleteOrder(order.orderId)">Delete</button>
             </div>
 
           </div>

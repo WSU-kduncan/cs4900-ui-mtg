@@ -35,10 +35,8 @@ export class OrderIdComponent {
     this.orderService.getOrders().subscribe({
       next: list => {
         this.orders.set(list);
-        // Also update the service's internal order list for local modifications
         list.forEach(order => this.orderService.addOrder(order));
-      },
-      error: err => console.error('Error loading orders:', err)
+      }
     });
   }
 
@@ -67,8 +65,7 @@ export class OrderIdComponent {
     this.orderService.deleteOrder(id).subscribe({
       next: () => {
         this.orders.update(list => list.filter(o => o.orderId !== id));
-      },
-      error: err => console.error('Delete failed:', err)
+      }
     });
   }
 
@@ -81,8 +78,7 @@ export class OrderIdComponent {
         this.orders.update(list =>
           list.map(o => o.orderId === orderId ? { ...o, status: newStatus } : o)
         );
-      },
-      error: err => console.error('Update failed:', err)
+      }
     });
   }
 
@@ -109,12 +105,9 @@ export class OrderIdComponent {
   }
 
   addCardItemToOrder() {
-    console.log('Add button clicked');
     const order = this.selectedOrder();
-    console.log('Selected order:', order);
     
     if (!order) {
-      console.log('No order selected');
       return;
     }
 
@@ -123,23 +116,18 @@ export class OrderIdComponent {
     const quantity = this.editQuantity();
     const price = this.editPrice();
 
-    console.log('Form values:', { cardNum, setName, quantity, price });
-
     if (!cardNum || !setName || quantity <= 0) {
       alert('Please fill in card number, set name, and valid quantity');
       return;
     }
 
-    // First, check if the card exists in the database
     this.cardService.getOne(parseInt(cardNum), setName.toUpperCase()).subscribe({
       next: (card) => {
-        // Card exists, check if there's enough stock
         if (card.stock < quantity) {
           alert(`Not enough stock! Only ${card.stock} available for ${card.cardName} (${setName})`);
           return;
         }
 
-        // Card exists and has enough stock, proceed to add to order
         const newItem: OrderItem = {
           cardNumber: parseInt(cardNum),
           setName: setName.toUpperCase(),
@@ -147,12 +135,8 @@ export class OrderIdComponent {
           price: price
         };
 
-        console.log('Sending item to backend:', newItem);
-
         this.orderService.addItemToOrder(order.orderId, newItem).subscribe({
           next: () => {
-            console.log('Item added successfully to backend');
-            // Wait a bit for backend to process, then reload
             setTimeout(() => {
               this.reloadOrders();
             }, 500);
@@ -162,14 +146,11 @@ export class OrderIdComponent {
             this.editPrice.set(0);
           },
           error: err => {
-            console.error('Failed to add item:', err);
-            alert(`Error adding item: ${err.message || 'Unknown error'}`);
+            alert('Error adding item. Please try again.');
           }
         });
       },
-      error: (err) => {
-        // Card doesn't exist
-        console.error('Card not found:', err);
+      error: () => {
         alert(`Card ${cardNum} from set ${setName.toUpperCase()} is not in stock or does not exist in the database.`);
       }
     });
@@ -181,32 +162,26 @@ export class OrderIdComponent {
 
     const item = order.items[index];
     if (!item?.cardNumber || !item?.setName) {
-      console.error('Cannot remove item: missing cardNumber or setName');
       return;
     }
 
     this.orderService.removeItemFromOrder(order.orderId, item.cardNumber, item.setName).subscribe({
       next: () => {
         this.reloadOrders();
-      },
-      error: err => console.error('Failed to remove item:', err)
+      }
     });
   }
 
   reloadOrders() {
-    console.log('Reloading orders from backend...');
     this.orderService.getOrders().subscribe({
       next: list => {
-        console.log('Orders reloaded:', list);
         this.orders.set(list);
         const currentSelectedId = this.selectedOrder()?.orderId;
         if (currentSelectedId) {
           const updated = list.find(o => o.orderId === currentSelectedId);
-          console.log('Updated selected order:', updated);
           this.selectedOrder.set(updated || null);
         }
-      },
-      error: err => console.error('Error reloading orders:', err)
+      }
     });
   }
 

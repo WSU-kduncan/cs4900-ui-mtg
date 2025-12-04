@@ -26,25 +26,10 @@ export class CardListComponent {
       next: (data) => {
         this.cards.set(data);
         this.isLoading.set(false);
-        this.errorMessage.set(null);
       },
       error: (error) => {
-        console.error('Error loading cards:', error);
-        console.error('Error status:', error.status);
-        console.error('Error message:', error.message);
         this.isLoading.set(false);
-
-        if (error.status === 0) {
-          this.errorMessage.set(
-            'Cannot connect to server. CORS policy may be blocking the request. Please check if the backend is running and CORS is configured.'
-          );
-        } else if (error.status === 404) {
-          this.errorMessage.set('Card service endpoint not found. Please verify the backend URL is correct.');
-        } else {
-          this.errorMessage.set(`Failed to load cards: ${error.message || 'Unknown error'}`);
-        }
-
-        this.cards.set([]);
+        this.errorMessage.set('Failed to load cards. Please check if the server is running.');
       },
     });
   }
@@ -68,6 +53,19 @@ export class CardListComponent {
   trackByCard = (_: number, c: Card) => c.cardNumber;
 
   createCard(card: Card) {
-    this.cards.set([...this.cards(), card]);
+    this.cardService.create(card).subscribe({
+      next: (savedCard) => {
+        this.cards.set([...this.cards(), savedCard]);
+      },
+      error: () => {
+        alert('Failed to create card. Please try again.');
+      }
+    });
+  }
+  
+  onCardDeleted() {
+    this.cardService.getAll().subscribe({
+      next: (data) => this.cards.set(data)
+    });
   }
 }
