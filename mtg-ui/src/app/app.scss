@@ -52,9 +52,43 @@
 }
 
 .app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.45);
   margin-bottom: 1rem;
+}
+
+.app-navigation {
+  display: flex;
+  gap: 1rem;
+  
+  .nav-btn {
+    padding: 0.6rem 1.5rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 0.5rem;
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    
+    &:hover {
+      background: rgba(51, 65, 85, 0.9);
+      border-color: rgba(148, 163, 184, 0.5);
+      transform: translateY(-1px);
+    }
+    
+    &.active {
+      background: linear-gradient(135deg, #f97316, #7c3aed);
+      border-color: transparent;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+  }
 }
 
 .app-title {

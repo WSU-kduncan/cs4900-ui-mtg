@@ -228,8 +228,8 @@ export class OrderService {
     });
   }
 
-  removeItemFromOrder(orderId: number, itemId: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/orders/${orderId}/items/${itemId}`, {
+  removeItemFromOrder(orderId: number, cardNumber: number, setName: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/orders/${orderId}/items/${cardNumber}/${setName}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

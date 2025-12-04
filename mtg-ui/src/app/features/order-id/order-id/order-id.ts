@@ -180,12 +180,12 @@ export class OrderIdComponent {
     if (!order) return;
 
     const item = order.items[index];
-    if (!item?.orderItemID) {
-      console.error('Cannot remove item: missing orderItemID');
+    if (!item?.cardNumber || !item?.setName) {
+      console.error('Cannot remove item: missing cardNumber or setName');
       return;
     }
 
-    this.orderService.removeItemFromOrder(order.orderId, item.orderItemID).subscribe({
+    this.orderService.removeItemFromOrder(order.orderId, item.cardNumber, item.setName).subscribe({
       next: () => {
         this.reloadOrders();
       },
