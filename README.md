@@ -60,12 +60,16 @@ Once you reach the login page, everything is running smoothly congrats! You are 
 
 To Login, here is the username and password
 ### **USERNAME**
-
->! admin
+<details>
+  <summary>Username</summary>
+  admin
+</details>
 
 ### **PASSWORD**
-
->! admin
+<details>
+  <summary>Password</summary>
+  admin
+</details> <br>
 
 
 **The application will automatically reload when you modify source files.**
