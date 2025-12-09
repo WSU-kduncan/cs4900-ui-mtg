@@ -80,6 +80,17 @@ To Login, here is the username and password
 
 ### **LOGGING IN, ADDING/DELETING WORKER AND SEARCHING SPECIFIC WORKER**
 
+
+https://github.com/user-attachments/assets/5e9544c3-7816-4e48-abb4-fb9934d098fc
+
+
 ### **CREATING ORDER, ADDING ITEMS INTO ORDER, CHANGING ORDER STATUS TO PAID AND DELETING ORDER**
 
+
+https://github.com/user-attachments/assets/fe5987c9-6974-4dfe-b221-473e5359259c
+
+
 ### **ADD CARD ITEM INTO CARD INVENTORY, SEARCH FOR SPECIFIC CARD AND DELETING CARD**
+
+https://github.com/user-attachments/assets/969009a9-3276-4490-9198-653b4dcb8515
+
