@@ -74,3 +74,12 @@ To Login, here is the username and password
 
 **The application will automatically reload when you modify source files.**
 
+# Example Videos
+
+**These videos are to help the user understand how this website works and how to nagivate the UI.**
+
+### **LOGGING IN, ADDING/DELETING WORKER AND SEARCHING SPECIFIC WORKER**
+
+### **CREATING ORDER, ADDING ITEMS INTO ORDER, CHANGING ORDER STATUS TO PAID AND DELETING ORDER**
+
+### **ADD CARD ITEM INTO CARD INVENTORY, SEARCH FOR SPECIFIC CARD AND DELETING CARD**
